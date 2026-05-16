@@ -109,31 +109,6 @@
         }
         .btn-primary:hover { background: #C2410C; }
 
-        .divider {
-            display: flex; align-items: center; gap: 12px;
-            margin: 20px 0; color: #D1D5DB; font-size: .75rem;
-        }
-        .divider::before, .divider::after {
-            content: ''; flex: 1; height: 1px; background: #E5E7EB;
-        }
-
-        .test-accounts { display: flex; flex-direction: column; gap: 6px; }
-        .test-btn {
-            background: #FFFAF7; border: 1.5px solid #FED7AA;
-            border-radius: 8px; padding: 8px 14px;
-            font-size: .75rem; font-family: inherit; cursor: pointer;
-            display: flex; align-items: center; gap: 8px;
-            color: #374151; transition: all .15s;
-        }
-        .test-btn:hover {
-            border-color: #EA580C;
-            background: #FFF7ED;
-            color: #EA580C;
-        }
-        .test-btn-badge {
-            padding: 2px 8px; border-radius: 20px;
-            font-size: .65rem; font-weight: 700;
-        }
     </style>
 </head>
 <body>
@@ -207,26 +182,6 @@
             </button>
         </form>
 
-        <div class="divider">Comptes de démonstration</div>
-
-        <div class="test-accounts">
-            <button type="button" class="test-btn" onclick="fillLogin('admin@immo.fr','Admin@2024')">
-                <span class="test-btn-badge" style="background:#FEF3C7;color:#92400E">Admin</span>
-                admin@immo.fr
-                <span style="margin-left:auto;opacity:.5;font-size:.7rem">Admin@2024</span>
-            </button>
-            <button type="button" class="test-btn" onclick="fillLogin('proprietaire@immo.fr','Prop@2024')">
-                <span class="test-btn-badge" style="background:#FFEDD5;color:#C2410C">Prop.</span>
-                proprietaire@immo.fr
-                <span style="margin-left:auto;opacity:.5;font-size:.7rem">Prop@2024</span>
-            </button>
-            <button type="button" class="test-btn" onclick="fillLogin('locataire@immo.fr','Loc@2024')">
-                <span class="test-btn-badge" style="background:#F0FDF4;color:#15803D">Locat.</span>
-                locataire@immo.fr
-                <span style="margin-left:auto;opacity:.5;font-size:.7rem">Loc@2024</span>
-            </button>
-        </div>
-
         <p style="text-align:center;font-size:.78rem;color:#9CA3AF;margin-top:24px">
             Pas encore de compte ?
             <a href="{{ route('register') }}" style="color:#EA580C;font-weight:600;text-decoration:none">
@@ -236,11 +191,6 @@
     </div>
 </div>
 
-<script>
-function fillLogin(email, pw) {
-    document.querySelector('[name=email]').value    = email;
-    document.querySelector('[name=password]').value = pw;
-}
-</script>
+<script></script>
 </body>
 </html>
