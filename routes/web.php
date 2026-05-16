@@ -66,7 +66,11 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middl
 Route::middleware(['auth', 'check.abonnement'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    Route::patch('/profil/devise', [ProfilController::class, 'updateDevise'])->name('profil.devise');
+    Route::get('/profil/edit',      [ProfilController::class, 'edit'])->name('profil.edit');
+    Route::post('/profil/info',     [ProfilController::class, 'updateInfo'])->name('profil.update-info');
+    Route::post('/profil/password', [ProfilController::class, 'updatePassword'])->name('profil.update-password');
+    Route::post('/profil/avatar',   [ProfilController::class, 'updateAvatar'])->name('profil.update-avatar');
+    Route::patch('/profil/devise',  [ProfilController::class, 'updateDevise'])->name('profil.devise');
 
     // ─── Abonnements propriétaire ────────────────────────────────────────────
     Route::get('/abonnements',                             [AbonnementController::class, 'index'])->name('abonnements.index');

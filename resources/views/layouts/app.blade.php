@@ -499,24 +499,20 @@
     </nav>
 
     <div class="sidebar-footer">
-        <div class="user-card">
+        <a href="{{ route('profil.edit') }}" class="user-card" style="text-decoration:none;display:flex;align-items:center;gap:10px;padding:12px 16px;transition:background .15s"
+           onmouseover="this.style.background='rgba(234,88,12,.08)'" onmouseout="this.style.background='transparent'">
+            @if(auth()->user()->avatar)
+            <img src="{{ asset('storage/'.auth()->user()->avatar) }}" alt="avatar"
+                 style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid #FDBA74;flex-shrink:0">
+            @else
             <div class="user-avatar">{{ strtoupper(substr(auth()->user()->name, 0, 1)) }}</div>
+            @endif
             <div style="flex:1; min-width:0">
                 <div class="user-name text-truncate">{{ auth()->user()->name }}</div>
                 <div class="user-role">{{ ucfirst(auth()->user()->role) }}</div>
             </div>
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" title="Déconnexion"
-                        style="background:rgba(234,88,12,.12);border:none;border-radius:8px;
-                               width:32px;height:32px;display:flex;align-items:center;justify-content:center;
-                               color:#EA580C;cursor:pointer;font-size:.95rem;transition:background .15s"
-                        onmouseover="this.style.background='rgba(234,88,12,.22)'"
-                        onmouseout="this.style.background='rgba(234,88,12,.12)'">
-                    <i class="bi bi-box-arrow-right"></i>
-                </button>
-            </form>
-        </div>
+            <i class="bi bi-pencil-square" style="color:#EA580C;font-size:.8rem;flex-shrink:0" title="Modifier le profil"></i>
+        </a>
     </div>
 </aside>
 
@@ -569,9 +565,61 @@
                 </div>
             </div>
         </div>
-        <a href="#" class="btn-topbar" title="Paramètres">
-            <i class="bi bi-gear"></i>
-        </a>
+        {{-- ── Menu profil (engrenage) ──────────────────────────────────── --}}
+        <div style="position:relative" id="gearWrap">
+            <button id="gearBtn" onclick="toggleGearDropdown()" title="Paramètres du profil"
+                    style="width:36px;height:36px;border-radius:8px;border:1px solid #E5E7EB;background:#fff;
+                           display:flex;align-items:center;justify-content:center;color:#78716C;
+                           cursor:pointer;font-size:1rem;transition:all .15s"
+                    onmouseover="this.style.background='#FFF7ED';this.style.color='#F97316';this.style.borderColor='#F97316'"
+                    onmouseout="this.style.background='#fff';this.style.color='#78716C';this.style.borderColor='#E5E7EB'">
+                <i class="bi bi-gear"></i>
+            </button>
+            <div id="gearDropdown" style="display:none;position:absolute;top:44px;right:0;width:220px;
+                 background:#fff;border:1px solid #E5E7EB;border-radius:12px;
+                 box-shadow:0 8px 24px rgba(0,0,0,.12);z-index:2000;overflow:hidden">
+                {{-- En-tête user --}}
+                <div style="padding:14px 16px;border-bottom:1px solid #F3F4F6;display:flex;align-items:center;gap:10px">
+                    @if(auth()->user()->avatar)
+                    <img src="{{ asset('storage/'.auth()->user()->avatar) }}" alt="avatar"
+                         style="width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid #FDBA74">
+                    @else
+                    <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#EA580C,#F97316);
+                                display:flex;align-items:center;justify-content:center;font-size:.95rem;font-weight:800;color:#fff;flex-shrink:0">
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    </div>
+                    @endif
+                    <div style="min-width:0">
+                        <div style="font-size:.82rem;font-weight:700;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ auth()->user()->name }}</div>
+                        <div style="font-size:.7rem;color:#9CA3AF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ auth()->user()->email }}</div>
+                    </div>
+                </div>
+                {{-- Lien Mon profil --}}
+                <a href="{{ route('profil.edit') }}"
+                   style="display:flex;align-items:center;gap:10px;padding:12px 16px;
+                          font-size:.82rem;font-weight:600;color:#374151;text-decoration:none;
+                          transition:background .12s"
+                   onmouseover="this.style.background='#FFF7ED';this.style.color='#EA580C'"
+                   onmouseout="this.style.background='transparent';this.style.color='#374151'">
+                    <i class="bi bi-person-circle" style="font-size:1rem;color:#EA580C"></i>
+                    Mon profil
+                </a>
+                <div style="height:1px;background:#F3F4F6;margin:0 12px"></div>
+                {{-- Déconnexion --}}
+                <form method="POST" action="{{ route('logout') }}" style="margin:0">
+                    @csrf
+                    <button type="submit"
+                            style="width:100%;display:flex;align-items:center;gap:10px;padding:12px 16px;
+                                   font-size:.82rem;font-weight:600;color:#DC2626;background:none;border:none;
+                                   cursor:pointer;text-align:left;font-family:inherit;transition:background .12s"
+                            onmouseover="this.style.background='#FFF1F2'"
+                            onmouseout="this.style.background='transparent'">
+                        <i class="bi bi-box-arrow-right" style="font-size:1rem"></i>
+                        Déconnexion
+                    </button>
+                </form>
+            </div>
+        </div>
     </header>
 
     <main class="page-content">
@@ -603,6 +651,18 @@
 <script>
 function openSidebar()  { document.getElementById('sidebar').classList.add('open'); document.getElementById('overlay').style.display='block'; }
 function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').style.display='none'; }
+
+// ── Dropdown engrenage (profil) ──────────────────────────────────────────────
+function toggleGearDropdown() {
+    const dd = document.getElementById('gearDropdown');
+    dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+}
+document.addEventListener('click', function(e) {
+    const wrap = document.getElementById('gearWrap');
+    if (wrap && !wrap.contains(e.target)) {
+        document.getElementById('gearDropdown').style.display = 'none';
+    }
+});
 
 // ── Cloche notifications ─────────────────────────────────────────────────────
 @auth
