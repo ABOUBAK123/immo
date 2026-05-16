@@ -11,6 +11,7 @@ use App\Http\Controllers\Mobile\MobileController;
 use App\Http\Controllers\Mobile\ReservationController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\BienController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\InterventionController;
@@ -58,6 +59,12 @@ Route::middleware('guest')->group(function () {
     Route::post('/login',    [AuthController::class, 'login']);
     Route::get('/register',  [AuthController::class, 'showRegister'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
+
+    // Réinitialisation du mot de passe
+    Route::get('/mot-de-passe-oublie',          [PasswordResetController::class, 'showForgotForm'])->name('password.request');
+    Route::post('/mot-de-passe-oublie',         [PasswordResetController::class, 'sendResetLink'])->name('password.email');
+    Route::get('/reinitialiser/{token}',        [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+    Route::post('/reinitialiser-mot-de-passe',  [PasswordResetController::class, 'resetPassword'])->name('password.update');
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout')->middleware('auth');

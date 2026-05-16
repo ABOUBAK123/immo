@@ -149,6 +149,12 @@
         <div class="form-title">Connexion</div>
         <div class="form-subtitle">Accédez à votre espace de gestion immobilière</div>
 
+        @if(session('status'))
+        <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:.78rem;color:#15803D;display:flex;align-items:center;gap:8px">
+            <i class="bi bi-check-circle-fill"></i> {{ session('status') }}
+        </div>
+        @endif
+
         @if($errors->any())
         <div style="background:#FFF1F2;border:1px solid #FCA5A5;border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:.78rem;color:#DC2626">
             <i class="bi bi-exclamation-triangle me-1"></i>
@@ -170,7 +176,13 @@
                        value="{{ old('email') }}" placeholder="vous@exemple.com" required autofocus>
             </div>
             <div class="mb">
-                <label class="lbl" for="password">Mot de passe</label>
+                <label class="lbl" for="password" style="display:flex;justify-content:space-between;align-items:center">
+                    Mot de passe
+                    <a href="{{ route('password.request') }}"
+                       style="font-size:.74rem;font-weight:600;color:#EA580C;text-decoration:none">
+                        Mot de passe oublié ?
+                    </a>
+                </label>
                 <input type="password" id="password" name="password" class="inp" placeholder="••••••••" required>
             </div>
             <div class="checkbox-row">
