@@ -32,8 +32,11 @@ class LocationController extends Controller
 
     public function create(Request $request)
     {
-        $biens = Auth::user()->biens()->where('statut', 'disponible')->get();
-        $locataires = User::where('role', 'locataire')->get();
+        $user = Auth::user();
+        $biens = $user->biens()->where('statut', 'disponible')->get();
+        $locataires = User::where('role', 'locataire')
+            ->when(!$user->isAdmin(), fn($q) => $q->where('created_by', $user->id))
+            ->get();
         $bien = $request->bien_id ? Bien::find($request->bien_id) : null;
         return view('locations.create', compact('biens', 'locataires', 'bien'));
     }
@@ -74,7 +77,10 @@ class LocationController extends Controller
     public function edit(Location $location)
     {
         $this->authoriser($location);
-        $locataires = User::where('role', 'locataire')->get();
+        $user = Auth::user();
+        $locataires = User::where('role', 'locataire')
+            ->when(!$user->isAdmin(), fn($q) => $q->where('created_by', $user->id))
+            ->get();
         return view('locations.edit', compact('location', 'locataires'));
     }
 

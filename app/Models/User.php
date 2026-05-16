@@ -22,6 +22,7 @@ class User extends Authenticatable
         'devise',
         'statut',
         'password',
+        'created_by',
     ];
 
     const DEVISES = [

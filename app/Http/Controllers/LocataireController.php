@@ -43,11 +43,12 @@ class LocataireController extends Controller
         ]);
 
         $locataire = User::create([
-            'name'     => $data['name'],
-            'email'    => $data['email'],
-            'phone'    => $data['phone'] ?? null,
-            'role'     => 'locataire',
-            'password' => Hash::make($data['password']),
+            'name'       => $data['name'],
+            'email'      => $data['email'],
+            'phone'      => $data['phone'] ?? null,
+            'role'       => 'locataire',
+            'password'   => Hash::make($data['password']),
+            'created_by' => Auth::id(),
         ]);
         $locataire->assignRole('locataire');
 
