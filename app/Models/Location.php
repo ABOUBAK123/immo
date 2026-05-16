@@ -1,0 +1,37 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+class Location extends Model
+{
+    use HasFactory, SoftDeletes;
+
+    protected $fillable = [
+        'bien_id', 'locataire_id', 'date_debut', 'date_fin', 'loyer_mensuel',
+        'charges', 'depot_garantie', 'type_bail', 'statut',
+        'revision_loyer_date', 'index_irl', 'conditions_particulieres',
+    ];
+
+    protected $casts = [
+        'date_debut'          => 'date',
+        'date_fin'            => 'date',
+        'revision_loyer_date' => 'date',
+        'loyer_mensuel'       => 'decimal:2',
+        'charges'             => 'decimal:2',
+        'depot_garantie'      => 'decimal:2',
+    ];
+
+    public function bien()      { return $this->belongsTo(Bien::class); }
+    public function locataire() { return $this->belongsTo(User::class, 'locataire_id'); }
+    public function paiements() { return $this->hasMany(Paiement::class); }
+    public function documents() { return $this->morphMany(Document::class, 'documentable'); }
+
+    public function getMontantTotalAttribute(): float
+    {
+        return (float) $this->loyer_mensuel + (float) $this->charges;
+    }
+}

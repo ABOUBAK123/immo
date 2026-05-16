@@ -1,0 +1,28 @@
+{
+    "name": "ImmoGest — Immobilier",
+    "short_name": "ImmoGest",
+    "description": "Trouvez votre logement idéal — location, vente, séjour meublé",
+    "start_url": "/immo/public/m",
+    "scope": "/immo/public/m",
+    "display": "standalone",
+    "orientation": "portrait",
+    "background_color": "#FFF7ED",
+    "theme_color": "#F97316",
+    "categories": ["real estate", "lifestyle"],
+    "icons": [
+        {
+            "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'><rect width='192' height='192' rx='36' fill='%23F97316'/><path d='M96 40L144 80v72H108V112H84v40H48V80z' fill='white'/></svg>",
+            "sizes": "192x192",
+            "type": "image/svg+xml",
+            "purpose": "any"
+        },
+        {
+            "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><rect width='512' height='512' rx='96' fill='%23F97316'/><path d='M256 100L380 195v195H285V305H227v85H132V195z' fill='white'/></svg>",
+            "sizes": "512x512",
+            "type": "image/svg+xml",
+            "purpose": "maskable"
+        }
+    ],
+    "screenshots": [],
+    "prefer_related_applications": false
+}
