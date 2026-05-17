@@ -14,7 +14,9 @@ class NotificationController extends Controller
     public function index(Request $request)
     {
         $user = Auth::user();
-        abort_if(!in_array($user->role, ['admin', 'proprietaire']), 403);
+        if (!in_array($user->role, ['admin', 'proprietaire'])) {
+            return redirect()->route('dashboard');
+        }
 
         $query = NotificationEnvoyee::where('proprietaire_id', $user->id)
             ->with('locataire', 'paiement');
@@ -60,7 +62,9 @@ class NotificationController extends Controller
     public function send(Request $request)
     {
         $user = Auth::user();
-        abort_if(!in_array($user->role, ['admin', 'proprietaire']), 403);
+        if (!in_array($user->role, ['admin', 'proprietaire'])) {
+            return redirect()->route('dashboard');
+        }
 
         $data = $request->validate([
             'locataire_ids'  => 'required|array|min:1',
@@ -131,7 +135,9 @@ class NotificationController extends Controller
     public function sendBulkRetards(Request $request)
     {
         $user = Auth::user();
-        abort_if(!in_array($user->role, ['admin', 'proprietaire']), 403);
+        if (!in_array($user->role, ['admin', 'proprietaire'])) {
+            return redirect()->route('dashboard');
+        }
 
         $canal = $request->input('canal', 'email');
 

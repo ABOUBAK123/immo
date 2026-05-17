@@ -558,12 +558,14 @@
                     </button>
                 </div>
                 <div id="bellList" style="max-height:340px;overflow-y:auto"></div>
+                @if(in_array(auth()->user()->role, ['admin','proprietaire']))
                 <div style="padding:10px 16px;border-top:1px solid #F3F4F6;text-align:center">
                     <a href="{{ route('notifications.index') }}"
                        style="font-size:.75rem;color:#EA580C;font-weight:600;text-decoration:none">
                         Voir toutes les notifications →
                     </a>
                 </div>
+                @endif
             </div>
         </div>
         {{-- ── Menu profil (engrenage) ──────────────────────────────────── --}}
