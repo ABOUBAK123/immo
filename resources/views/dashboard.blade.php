@@ -184,7 +184,7 @@
                         <span style="font-weight:500;font-size:.8rem">{{ $p->location->locataire->name }}</span>
                     </div>
                 </td>
-                <td style="color:#6B7280;font-size:.78rem">{{ Str::limit($p->location->bien->titre, 20) }}</td>
+                <td style="color:#6B7280;font-size:.78rem">{{ Str::limit(optional($p->location->bien)->titre ?? '—', 20) }}</td>
                 <td style="font-weight:600">{{ number_format($p->montant, 0, ',', ' ') }} {{ $devSymbole }}</td>
                 <td>
                     @php
@@ -228,7 +228,7 @@
                 <div style="width:8px;height:8px;border-radius:50%;background:#DC2626;flex-shrink:0;margin-top:5px"></div>
                 <div>
                     <div style="font-size:.8rem;font-weight:600">{{ $u->titre }}</div>
-                    <div style="font-size:.72rem;color:#6B7280">{{ $u->bien->titre }}</div>
+                    <div style="font-size:.72rem;color:#6B7280">{{ optional($u->bien)->titre ?? '—' }}</div>
                 </div>
                 <a href="{{ route('interventions.show', $u) }}" style="margin-left:auto;font-size:.72rem;color:#2563EB;white-space:nowrap">Voir →</a>
             </div>
@@ -288,7 +288,7 @@
                 <div class="modal-body pt-2">
                     <div class="mb-3 p-3 rounded-3" style="background:#F9FAFB;font-size:.82rem">
                         <strong>{{ $p->location->locataire->name }}</strong><br>
-                        {{ $p->location->bien->titre }} · {{ $p->date_echeance->format('d/m/Y') }}<br>
+                        {{ optional($p->location->bien)->titre ?? '—' }} · {{ $p->date_echeance->format('d/m/Y') }}<br>
                         <span style="font-size:1.1rem;font-weight:700;color:#2563EB">{{ number_format($p->montant, 0, ',', ' ') }} {{ $devSymbole }}</span>
                     </div>
                     <div class="mb-3">
@@ -336,7 +336,7 @@
             <i class="bi bi-house-door me-2" style="color:#2563EB"></i>Mon logement
         </div>
         <div style="padding:20px">
-            <h3 style="font-size:1rem;font-weight:700;margin-bottom:4px">{{ $location->bien->titre }}</h3>
+            <h3 style="font-size:1rem;font-weight:700;margin-bottom:4px">{{ optional($location->bien)->titre ?? '—' }}</h3>
             <p style="color:#6B7280;font-size:.83rem;margin-bottom:16px">
                 <i class="bi bi-geo-alt me-1"></i>{{ $location->bien->adresse }}, {{ $location->bien->ville }}
             </p>

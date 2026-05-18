@@ -181,7 +181,7 @@
                 @php $retard = $p->statut === 'en_attente' && $p->date_echeance->isPast(); @endphp
                 <tr>
                     <td style="font-size:.8rem;font-weight:500">{{ $p->location->locataire->name }}</td>
-                    <td style="font-size:.78rem;color:#6B7280">{{ Str::limit($p->location->bien->titre, 22) }}</td>
+                    <td style="font-size:.78rem;color:#6B7280">{{ Str::limit(optional($p->location->bien)->titre ?? '—', 22) }}</td>
                     <td style="font-size:.78rem">{{ $p->date_echeance->format('d/m/Y') }}</td>
                     <td style="font-weight:700">{{ number_format($p->montant, 0, ',', ' ') }} {{ \App\Models\User::DEVISES[$user->devise ?? 'XOF']['symbole'] ?? $user->devise }}</td>
                     <td>

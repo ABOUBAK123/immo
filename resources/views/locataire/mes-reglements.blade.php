@@ -149,7 +149,7 @@
                 · le {{ $prochaine->date_echeance->format('d/m/Y') }}
                 @endif
             </div>
-            <button onclick="ouvrirPaiement({{ $prochaine->id }}, '{{ addslashes($location->bien->titre) }}', {{ $prochaine->montant }}, '{{ $devSymbole }}')"
+            <button onclick="ouvrirPaiement({{ $prochaine->id }}, '{{ addslashes(optional($location->bien)->titre ?? '') }}', {{ $prochaine->montant }}, '{{ $devSymbole }}')"
                     style="display:inline-flex;align-items:center;gap:5px;margin-top:10px;
                            background:{{ $icColor }};color:#fff;padding:7px 14px;border-radius:8px;
                            font-size:.76rem;font-weight:700;border:none;cursor:pointer">
@@ -329,7 +329,7 @@
             </td>
             <td style="white-space:nowrap">
                 @if($p->statut !== 'paye')
-                <button onclick="ouvrirPaiement({{ $p->id }}, '{{ addslashes($location->bien->titre) }}', {{ $p->montant }}, '{{ $devSymbole }}')"
+                <button onclick="ouvrirPaiement({{ $p->id }}, '{{ addslashes(optional($location->bien)->titre ?? '') }}', {{ $p->montant }}, '{{ $devSymbole }}')"
                         style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;
                                background:linear-gradient(135deg,#EA580C,#F97316);color:#fff;
                                border:none;border-radius:8px;font-size:.75rem;font-weight:700;
@@ -413,7 +413,7 @@
                     {{ $p->date_echeance->diffForHumans() }}
                 </td>
                 <td style="white-space:nowrap">
-                    <button onclick="ouvrirPaiement({{ $p->id }}, '{{ addslashes($location->bien->titre) }}', {{ $p->montant }}, '{{ $devSymbole }}')"
+                    <button onclick="ouvrirPaiement({{ $p->id }}, '{{ addslashes(optional($location->bien)->titre ?? '') }}', {{ $p->montant }}, '{{ $devSymbole }}')"
                             style="background:#D97706;color:#fff;border:none;border-radius:6px;padding:5px 12px;
                                    font-size:.75rem;font-weight:600;cursor:pointer;text-decoration:none">
                         <i class="bi bi-phone-fill"></i> Payer

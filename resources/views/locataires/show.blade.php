@@ -73,9 +73,9 @@
             <div style="padding:16px 20px;border-bottom:1px solid #F9FAFB">
                 <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
                     <div style="flex:1">
-                        <div style="font-weight:600;font-size:.88rem;margin-bottom:4px">{{ $loc->bien->titre }}</div>
+                        <div style="font-weight:600;font-size:.88rem;margin-bottom:4px">{{ optional($loc->bien)->titre ?? '—' }}</div>
                         <div style="font-size:.78rem;color:#9CA3AF;margin-bottom:10px">
-                            <i class="bi bi-geo-alt me-1"></i>{{ $loc->bien->adresse }}, {{ $loc->bien->ville }}
+                            <i class="bi bi-geo-alt me-1"></i>{{ optional($loc->bien)->adresse ?? '' }}{{ $loc->bien ? ', ' . $loc->bien->ville : '' }}
                         </div>
                         <div style="display:flex;flex-wrap:wrap;gap:12px;font-size:.78rem;color:#6B7280">
                             <span><i class="bi bi-calendar3 me-1"></i>Début : {{ $loc->date_debut->format('d/m/Y') }}</span>

@@ -49,8 +49,8 @@
         @foreach($locations as $loc)
         <tr>
             <td>
-                <div style="font-weight:600;font-size:.85rem">{{ $loc->bien->titre }}</div>
-                <div style="font-size:.72rem;color:#9CA3AF"><i class="bi bi-geo-alt me-1"></i>{{ $loc->bien->ville }}</div>
+                <div style="font-weight:600;font-size:.85rem">{{ optional($loc->bien)->titre ?? '—' }}</div>
+                <div style="font-size:.72rem;color:#9CA3AF"><i class="bi bi-geo-alt me-1"></i>{{ optional($loc->bien)->ville ?? '—' }}</div>
             </td>
             <td>
                 <div style="display:flex;align-items:center;gap:8px">

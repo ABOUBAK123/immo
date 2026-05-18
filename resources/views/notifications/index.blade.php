@@ -336,7 +336,7 @@
                                 @if($locAct)
                                 <div style="text-align:right">
                                     <div style="font-size:.72rem;font-weight:600;color:#2563EB">{{ number_format($locAct->loyer_mensuel,0,',',' ') }} €/mois</div>
-                                    <div style="font-size:.68rem;color:#9CA3AF">{{ Str::limit($locAct->bien->titre, 20) }}</div>
+                                    <div style="font-size:.68rem;color:#9CA3AF">{{ Str::limit(optional($locAct->bien)->titre ?? '—', 20) }}</div>
                                 </div>
                                 @endif
                             </label>

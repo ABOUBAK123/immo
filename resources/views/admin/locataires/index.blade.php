@@ -108,8 +108,8 @@
             </td>
             <td>
                 @if($locationActive)
-                <div style="font-size:.82rem;font-weight:500">{{ Str::limit($locationActive->bien->titre, 26) }}</div>
-                <div style="font-size:.7rem;color:#9CA3AF"><i class="bi bi-geo-alt me-1"></i>{{ $locationActive->bien->ville }}</div>
+                <div style="font-size:.82rem;font-weight:500">{{ Str::limit(optional($locationActive->bien)->titre ?? '—', 26) }}</div>
+                <div style="font-size:.7rem;color:#9CA3AF"><i class="bi bi-geo-alt me-1"></i>{{ optional($locationActive->bien)->ville ?? '—' }}</div>
                 @else
                 <span style="color:#D1D5DB;font-size:.8rem">— Aucun logement</span>
                 @endif

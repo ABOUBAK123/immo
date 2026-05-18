@@ -308,7 +308,7 @@
                 @if($p->statut !== 'paye')
                     @if($isLocataire)
                     {{-- Bouton paiement mobile pour locataire --}}
-                    <button onclick="ouvrirPaiementMobile({{ $p->id }}, '{{ addslashes($p->location->bien->titre) }}', {{ $p->montant }}, '{{ $devSymbole }}')"
+                    <button onclick="ouvrirPaiementMobile({{ $p->id }}, '{{ addslashes(optional($p->location->bien)->titre ?? '') }}', {{ $p->montant }}, '{{ $devSymbole }}')"
                             style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;
                                    background:linear-gradient(135deg,#EA580C,#F97316);color:#fff;
                                    border:none;border-radius:8px;font-size:.78rem;font-weight:700;
@@ -454,7 +454,7 @@
                 <div class="modal-body pt-2">
                     <div style="background:#F9FAFB;border-radius:10px;padding:12px 14px;margin-bottom:16px;font-size:.82rem">
                         <strong>{{ $p->location->locataire->name }}</strong><br>
-                        {{ $p->location->bien->titre }}<br>
+                        {{ optional($p->location->bien)->titre ?? '—' }}<br>
                         <span style="color:#9CA3AF">{{ $p->date_echeance->format('d/m/Y') }}</span>
                         <span style="font-size:1.1rem;font-weight:800;color:#2563EB;display:block;margin-top:4px">
                             {{ number_format($p->montant, 0, ',', ' ') }} {{ $devSymbole }}

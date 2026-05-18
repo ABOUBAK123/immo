@@ -111,7 +111,7 @@
         $fraisAg  = round((float)$p->location->loyer_mensuel * (float)$p->location->frais_agence / 100, 0);
     @endphp
     <tr>
-        <td class="bold">{{ Str::limit($p->location->bien->titre, 22) }}</td>
+        <td class="bold">{{ Str::limit(optional($p->location->bien)->titre ?? '—', 22) }}</td>
         <td>{{ $p->location->locataire->name ?? '—' }}</td>
         <td>{{ $p->date_echeance->format('d/m/Y') }}</td>
         <td class="right">{{ number_format($p->location->loyer_mensuel, 0, ',', ' ') }}</td>

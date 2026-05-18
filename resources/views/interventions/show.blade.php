@@ -8,7 +8,7 @@
             <i class="bi bi-arrow-left me-1"></i> Interventions
         </a>
         <h4 class="fw-bold mb-0">{{ $intervention->titre }}</h4>
-        <p class="text-muted small mb-0">{{ $intervention->bien->titre }} — {{ $intervention->bien->ville }}</p>
+        <p class="text-muted small mb-0">{{ optional($intervention->bien)->titre ?? '—' }} — {{ optional($intervention->bien)->ville ?? '—' }}</p>
     </div>
     <div class="d-flex gap-2 align-items-center">
         <span class="badge {{ $intervention->priorite === 'urgente' ? 'bg-danger' : ($intervention->priorite === 'haute' ? 'bg-warning text-dark' : 'bg-secondary') }} px-3 py-2">
@@ -108,9 +108,9 @@
         @endif
         <div class="card p-3">
             <h6 class="fw-bold mb-2">Bien</h6>
-            <p class="mb-1 fw-semibold">{{ $intervention->bien->titre }}</p>
-            <p class="text-muted small mb-2">{{ $intervention->bien->adresse }}, {{ $intervention->bien->ville }}</p>
-            <a href="{{ route('biens.show', $intervention->bien) }}" class="btn btn-sm btn-outline-primary">Voir le bien</a>
+            <p class="mb-1 fw-semibold">{{ optional($intervention->bien)->titre ?? '—' }}</p>
+            <p class="text-muted small mb-2">{{ optional($intervention->bien)->adresse ?? '' }}{{ $intervention->bien ? ', ' . $intervention->bien->ville : '' }}</p>
+            @if($intervention->bien)<a href="{{ route('biens.show', $intervention->bien) }}" class="btn btn-sm btn-outline-primary">Voir le bien</a>@endif
         </div>
     </div>
 </div>

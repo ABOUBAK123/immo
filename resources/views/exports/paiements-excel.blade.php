@@ -170,7 +170,7 @@
         : '—';
    @endphp
    <Row ss:Height="18">
-    <Cell ss:StyleID="{{ $rowStyle }}"><Data ss:Type="String">{{ $p->location->bien->titre }}</Data></Cell>
+    <Cell ss:StyleID="{{ $rowStyle }}"><Data ss:Type="String">{{ optional($p->location->bien)->titre ?? '—' }}</Data></Cell>
     <Cell ss:StyleID="{{ $rowStyle }}"><Data ss:Type="String">{{ $p->location->locataire->name ?? '—' }}</Data></Cell>
     <Cell ss:StyleID="{{ $rowStyle }}"><Data ss:Type="String">{{ $p->date_echeance->format('d/m/Y') }}</Data></Cell>
     <Cell ss:StyleID="num"><Data ss:Type="Number">{{ (float)$p->location->loyer_mensuel }}</Data></Cell>

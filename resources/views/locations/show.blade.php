@@ -1,5 +1,5 @@
 @extends('layouts.app')
-@section('title', 'Bail — ' . $location->bien->titre)
+@section('title', 'Bail — ' . (optional($location->bien)->titre ?? '—'))
 @php $sym = auth()->user()->deviseSymbole(); @endphp
 
 @section('content')
@@ -8,7 +8,7 @@
         <a href="{{ route('locations.index') }}" class="btn btn-sm btn-outline-secondary mb-2">
             <i class="bi bi-arrow-left me-1"></i> Locations
         </a>
-        <h4 class="fw-bold mb-0">{{ $location->bien->titre }}</h4>
+        <h4 class="fw-bold mb-0">{{ optional($location->bien)->titre ?? '—' }}</h4>
         <p class="text-muted small mb-0">Bail {{ $location->type_bail }} — {{ $location->locataire->name }}</p>
     </div>
     <span class="badge fs-6 {{ $location->statut === 'actif' ? 'bg-success' : 'bg-secondary' }} px-3 py-2">
@@ -98,9 +98,9 @@
         </div>
         <div class="card p-3">
             <h6 class="fw-bold mb-3">Bien</h6>
-            <p class="mb-1 fw-semibold">{{ $location->bien->titre }}</p>
-            <p class="text-muted small">{{ $location->bien->adresse }}, {{ $location->bien->ville }}</p>
-            <a href="{{ route('biens.show', $location->bien) }}" class="btn btn-sm btn-outline-primary">Voir le bien</a>
+            <p class="mb-1 fw-semibold">{{ optional($location->bien)->titre ?? '—' }}</p>
+            <p class="text-muted small">{{ optional($location->bien)->adresse ?? '' }}{{ $location->bien ? ', ' . $location->bien->ville : '' }}</p>
+            @if($location->bien)<a href="{{ route('biens.show', $location->bien) }}" class="btn btn-sm btn-outline-primary">Voir le bien</a>@endif
         </div>
     </div>
 </div>
