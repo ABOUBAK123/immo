@@ -216,7 +216,7 @@
         <tr style="{{ $rowBg }}">
             <td>
                 <div style="display:flex;align-items:center;gap:6px">
-                    <div style="font-weight:600;font-size:.83rem">{{ Str::limit($p->location->bien->titre, 24) }}</div>
+                    <div style="font-weight:600;font-size:.83rem">{{ Str::limit(optional($p->location->bien)->titre ?? '—', 24) }}</div>
                     @if($estMoisCourant && $isLocataire)
                     <span style="font-size:.62rem;font-weight:700;background:#DCFCE7;color:#15803D;
                                  border:1px solid #BBF7D0;border-radius:4px;padding:1px 5px;white-space:nowrap">
