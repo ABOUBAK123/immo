@@ -245,42 +245,6 @@
         @endif
     </div>
 
-    {{-- Détail du paiement intégré --}}
-    <div class="section-body" style="padding-top:0;padding-bottom:6px">
-        <table class="payment-table">
-            <thead>
-                <tr>
-                    <th style="text-align:left">Désignation</th>
-                    <th style="text-align:right;width:160px">Montant ({{ $sym }})</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Loyer hors charges</td>
-                    <td>{{ number_format($loyer, 0, ',', ' ') }}</td>
-                </tr>
-                @if($charges > 0)
-                <tr>
-                    <td>Charges récupérables :</td>
-                    <td></td>
-                </tr>
-                <tr>
-                    <td class="indent">Eau, électricité, entretien parties communes &amp; ordures ménagères</td>
-                    <td>{{ number_format($charges, 0, ',', ' ') }}</td>
-                </tr>
-                <tr class="subtotal-row">
-                    <td>Sous-total charges</td>
-                    <td>{{ number_format($charges, 0, ',', ' ') }}</td>
-                </tr>
-                @endif
-                <tr class="total-row">
-                    <td>TOTAL GÉNÉRAL PAYÉ</td>
-                    <td>{{ number_format($total, 0, ',', ' ') }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
     {{-- Mention décharge --}}
     <div class="attestation-text" style="padding-top:8px;border-top:1px solid #e5e7eb">
         <p>

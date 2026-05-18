@@ -186,49 +186,6 @@
     </div>
 </div>
 
-{{-- ── Détail paiement ── --}}
-<div class="section">
-    <div class="sec-title">Détail du Paiement</div>
-    <div class="sec-body" style="padding-bottom:5px">
-        <div style="margin-bottom:6px;font-weight:700">
-            Période concernée : {{ $periodeLabel }}
-            (du {{ $periodeDebut->format('d/m/Y') }} au {{ $periodeFin->format('d/m/Y') }})
-        </div>
-        <table class="pay-table">
-            <thead>
-                <tr>
-                    <th>Désignation</th>
-                    <th class="r">Montant ({{ $sym }})</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Loyer hors charges</td>
-                    <td class="r">{{ number_format($loyer, 0, ',', ' ') }}</td>
-                </tr>
-                @if($charges > 0)
-                <tr>
-                    <td>Charges récupérables :</td>
-                    <td class="r"></td>
-                </tr>
-                <tr>
-                    <td class="indent">Eau, électricité, entretien parties communes &amp; ordures ménagères</td>
-                    <td class="r">{{ number_format($charges, 0, ',', ' ') }}</td>
-                </tr>
-                <tr class="subtotal">
-                    <td>Sous-total charges</td>
-                    <td class="r">{{ number_format($charges, 0, ',', ' ') }}</td>
-                </tr>
-                @endif
-                <tr class="total-row">
-                    <td>TOTAL GÉNÉRAL PAYÉ</td>
-                    <td class="r">{{ number_format($total, 0, ',', ' ') }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-</div>
-
 {{-- ── Attestation ── --}}
 <div class="section">
     <div class="sec-title">Attestation</div>
