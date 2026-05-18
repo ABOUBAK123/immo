@@ -108,6 +108,7 @@ Route::middleware(['auth', 'check.abonnement'])->group(function () {
     Route::patch('/paiements/{paiement}/payer',       [PaiementController::class, 'marquerPaye'])->name('paiements.payer');
     Route::post('/paiements/{paiement}/relance',      [PaiementController::class, 'relance'])->name('paiements.relance');
     Route::post('/paiements/{paiement}/mobile',       [PaiementController::class, 'initierMobile'])->name('paiements.mobile');
+    Route::get('/paiements/export',                   [PaiementController::class, 'export'])->name('paiements.export');
     Route::get('/paiements/retour-mobile',            [PaiementController::class, 'retourMobile'])->name('paiements.retour-mobile');
     Route::post('/paiements/webhook-loyer',           [PaiementController::class, 'webhookLoyer'])->name('paiements.webhook-loyer')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
     Route::post('/abonnements/webhook',              [AbonnementController::class, 'webhook'])->name('abonnements.webhook')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);

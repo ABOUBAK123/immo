@@ -114,6 +114,92 @@ class PaiementController extends Controller
         return view('paiements.index', compact('paiements', 'biens', 'residences', 'locataires', 'dernierPaiementPaye', 'interventionsMois'));
     }
 
+    public function export(Request $request)
+    {
+        $user = Auth::user();
+        if (!in_array($user->role, ['admin', 'proprietaire'])) {
+            return redirect()->route('dashboard');
+        }
+
+        $periode = $request->get('periode', 'mois');
+        $format  = $request->get('format', 'pdf');
+
+        [$dateDebut, $dateFin, $periodeLabel] = $this->getPeriodeDates($periode);
+
+        $paiements = Paiement::when(!$user->isAdmin(), function ($q) use ($user) {
+                $q->whereHas('location.bien', fn($b) => $b->where('proprietaire_id', $user->id));
+            })
+            ->with('location.bien', 'location.locataire')
+            ->whereBetween('date_echeance', [$dateDebut, $dateFin])
+            ->oldest('date_echeance')
+            ->get();
+
+        $bienIds = $user->isAdmin()
+            ? Bien::pluck('id')
+            : $user->biens()->pluck('id');
+
+        $totalRecouvrement = $paiements->where('statut', 'paye')->sum('montant');
+
+        $totalInterventions = Intervention::whereNotNull('cout')
+            ->whereNotNull('date_intervention')
+            ->whereBetween('date_intervention', [$dateDebut, $dateFin])
+            ->whereIn('bien_id', $bienIds)
+            ->sum('cout');
+
+        $totalFraisAgence = $paiements->where('statut', 'paye')->sum(function ($p) {
+            return round((float) $p->location->loyer_mensuel * (float) $p->location->frais_agence / 100, 2);
+        });
+
+        $totalNet = $totalRecouvrement - $totalInterventions - $totalFraisAgence;
+
+        $devSymbole = \App\Models\User::DEVISES[$user->devise ?? 'XOF']['symbole'] ?? ($user->devise ?? 'XOF');
+
+        $data = compact(
+            'paiements', 'totalRecouvrement', 'totalInterventions',
+            'totalFraisAgence', 'totalNet',
+            'dateDebut', 'dateFin', 'periodeLabel',
+            'user', 'devSymbole'
+        );
+
+        $filename = 'releve-paiements-' . $dateDebut->format('Y-m-d') . '_' . $dateFin->format('Y-m-d');
+
+        if ($format === 'excel') {
+            $xml = view('exports.paiements-excel', $data)->render();
+            return response($xml)
+                ->header('Content-Type', 'application/vnd.ms-excel; charset=UTF-8')
+                ->header('Content-Disposition', 'attachment; filename="' . $filename . '.xls"')
+                ->header('Cache-Control', 'max-age=0');
+        }
+
+        $pdf = Pdf::loadView('exports.paiements-pdf', $data)->setPaper('a4', 'landscape');
+        return $pdf->download($filename . '.pdf');
+    }
+
+    private function getPeriodeDates(string $periode): array
+    {
+        $now = now();
+        switch ($periode) {
+            case '2mois':
+                $debut = $now->copy()->subMonth()->startOfMonth();
+                return [$debut, $now->copy()->endOfMonth(),
+                    ucfirst($debut->isoFormat('MMMM')) . ' – ' . ucfirst($now->isoFormat('MMMM YYYY'))];
+            case 'trimestre':
+                $debut = $now->copy()->subMonths(2)->startOfMonth();
+                return [$debut, $now->copy()->endOfMonth(),
+                    'Trimestre ' . ceil($now->month / 3) . ' ' . $now->year];
+            case 'semestre':
+                $debut = $now->copy()->subMonths(5)->startOfMonth();
+                return [$debut, $now->copy()->endOfMonth(),
+                    ($now->month <= 6 ? '1er' : '2ème') . ' semestre ' . $now->year];
+            case 'annuel':
+                return [$now->copy()->startOfYear(), $now->copy()->endOfYear(),
+                    'Année ' . $now->year];
+            default: // mois
+                return [$now->copy()->startOfMonth(), $now->copy()->endOfMonth(),
+                    ucfirst($now->isoFormat('MMMM YYYY'))];
+        }
+    }
+
     public function marquerPaye(Request $request, Paiement $paiement)
     {
         $data = $request->validate([

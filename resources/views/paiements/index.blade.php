@@ -24,6 +24,17 @@
 
 @section('topbar-actions')
 @php $hasFilters = request()->hasAny(['statut','bien_id','residence','locataire_id']); @endphp
+
+@if(!in_array(auth()->user()->role, ['locataire']))
+<button type="button" onclick="document.getElementById('exportModal').style.display='flex'"
+        style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;
+               background:linear-gradient(135deg,#EA580C,#F97316);color:#fff;
+               border:none;border-radius:8px;font-size:.8rem;font-weight:700;
+               cursor:pointer;white-space:nowrap;box-shadow:0 2px 8px rgba(234,88,12,.25)">
+    <i class="bi bi-download"></i> Exporter
+</button>
+@endif
+
 <form method="GET" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
 
     {{-- Filtre par bien --}}
@@ -481,6 +492,126 @@
 </div>
 @endif
 @endforeach
+
+{{-- ════════════════════════════════════════════════════════════════════════ --}}
+{{-- MODAL EXPORT                                                            --}}
+{{-- ════════════════════════════════════════════════════════════════════════ --}}
+@if(!$isLocataire)
+<div id="exportModal"
+     style="display:none;position:fixed;inset:0;z-index:9999;
+            background:rgba(0,0,0,.45);align-items:center;justify-content:center">
+    <div style="background:#fff;border-radius:18px;width:100%;max-width:460px;
+                box-shadow:0 24px 60px rgba(0,0,0,.2);overflow:hidden">
+
+        {{-- En-tête --}}
+        <div style="background:linear-gradient(135deg,#EA580C,#F97316);padding:18px 22px;
+                    display:flex;justify-content:space-between;align-items:center">
+            <div>
+                <div style="font-size:.95rem;font-weight:800;color:#fff">
+                    <i class="bi bi-download me-2"></i>Exporter les paiements
+                </div>
+                <div style="font-size:.75rem;color:rgba(255,255,255,.8);margin-top:2px">
+                    PDF ou Excel avec récapitulatif et signatures
+                </div>
+            </div>
+            <button onclick="document.getElementById('exportModal').style.display='none'"
+                    style="background:rgba(255,255,255,.2);border:none;border-radius:8px;
+                           width:30px;height:30px;color:#fff;cursor:pointer;font-size:1rem">
+                ×
+            </button>
+        </div>
+
+        <div style="padding:22px">
+
+            {{-- Sélection période --}}
+            <div style="font-size:.82rem;font-weight:700;color:#374151;margin-bottom:10px">
+                <i class="bi bi-calendar3 me-1" style="color:#EA580C"></i>Période
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px" id="periodeGrid">
+                @foreach([
+                    ['mois',      'Mois courant',  'bi-calendar-date'],
+                    ['2mois',     '2 mois',        'bi-calendar2'],
+                    ['trimestre', 'Trimestre',     'bi-calendar-range'],
+                    ['semestre',  'Semestre',      'bi-calendar3'],
+                    ['annuel',    'Annuel',        'bi-calendar-check'],
+                ] as [$val, $lbl, $icon])
+                <label style="display:flex;align-items:center;gap:8px;padding:10px 12px;
+                              border:2px solid #E5E7EB;border-radius:10px;cursor:pointer;
+                              font-size:.82rem;font-weight:600;color:#374151;transition:.15s"
+                       onclick="selectPeriode('{{ $val }}', this)">
+                    <input type="radio" name="periode_radio" value="{{ $val }}"
+                           style="display:none" {{ $val === 'mois' ? 'checked' : '' }}>
+                    <i class="bi {{ $icon }}" style="color:#EA580C;font-size:1rem"></i>
+                    {{ $lbl }}
+                </label>
+                @endforeach
+            </div>
+
+            {{-- Sélection format --}}
+            <div style="font-size:.82rem;font-weight:700;color:#374151;margin-bottom:10px">
+                <i class="bi bi-file-earmark me-1" style="color:#EA580C"></i>Format
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px">
+                <button type="button" onclick="lancerExport('pdf')" id="btnPdf"
+                        style="display:flex;align-items:center;justify-content:center;gap:8px;
+                               padding:12px;border:2px solid #FECDD3;border-radius:10px;
+                               background:#FFF1F2;color:#DC2626;font-size:.85rem;font-weight:700;
+                               cursor:pointer;transition:.15s;font-family:inherit">
+                    <i class="bi bi-file-earmark-pdf-fill" style="font-size:1.2rem"></i>
+                    <div>
+                        <div>PDF</div>
+                        <div style="font-size:.68rem;font-weight:400;color:#9CA3AF">Mise en page A4</div>
+                    </div>
+                </button>
+                <button type="button" onclick="lancerExport('excel')" id="btnExcel"
+                        style="display:flex;align-items:center;justify-content:center;gap:8px;
+                               padding:12px;border:2px solid #BBF7D0;border-radius:10px;
+                               background:#F0FDF4;color:#15803D;font-size:.85rem;font-weight:700;
+                               cursor:pointer;transition:.15s;font-family:inherit">
+                    <i class="bi bi-file-earmark-excel-fill" style="font-size:1.2rem"></i>
+                    <div>
+                        <div>Excel</div>
+                        <div style="font-size:.68rem;font-weight:400;color:#9CA3AF">Format .xls</div>
+                    </div>
+                </button>
+            </div>
+
+            <div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;
+                        padding:10px 12px;font-size:.74rem;color:#92400E">
+                <i class="bi bi-info-circle me-1"></i>
+                Le document inclut le récapitulatif (recouvrement − interventions − frais agence) et les zones de signature.
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let periodeSelectionnee = 'mois';
+
+function selectPeriode(val, el) {
+    periodeSelectionnee = val;
+    document.querySelectorAll('#periodeGrid label').forEach(l => {
+        l.style.borderColor = '#E5E7EB';
+        l.style.background  = '#fff';
+        l.style.color       = '#374151';
+    });
+    el.style.borderColor = '#EA580C';
+    el.style.background  = '#FFF7ED';
+    el.style.color       = '#C2410C';
+}
+// Activer le mois par défaut
+document.addEventListener('DOMContentLoaded', function() {
+    const first = document.querySelector('#periodeGrid label');
+    if (first) selectPeriode('mois', first);
+});
+
+function lancerExport(format) {
+    const url = '{{ route("paiements.export") }}?periode=' + periodeSelectionnee + '&format=' + format;
+    window.location.href = url;
+    document.getElementById('exportModal').style.display = 'none';
+}
+</script>
+@endif
 
 @push('scripts')
 @if($isLocataire)
