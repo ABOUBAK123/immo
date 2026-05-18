@@ -2,6 +2,7 @@
 @section('title', 'Paiements')
 @section('page-title', 'Paiements')
 
+@php $hasFilters = request()->hasAny(['statut','bien_id','residence','locataire_id','proprietaire_id','mois']); @endphp
 @push('styles')
 <style>
 /* ── Canal card (choix paiement mobile) ── */
@@ -23,8 +24,6 @@
 @endpush
 
 @section('topbar-actions')
-@php $hasFilters = request()->hasAny(['statut','bien_id','residence','locataire_id']); @endphp
-
 @if(!in_array(auth()->user()->role, ['locataire']))
 <button type="button" onclick="document.getElementById('exportModal').style.display='flex'"
         style="display:inline-flex;align-items:center;gap:6px;padding:7px 14px;
@@ -36,6 +35,18 @@
 @endif
 
 <form method="GET" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+
+    {{-- Filtre par propriétaire (admin uniquement) --}}
+    @if(auth()->user()->isAdmin() && $proprietaires->count())
+    <select name="proprietaire_id" class="form-select-immo" style="width:auto;max-width:200px" onchange="this.form.submit()" title="Filtrer par propriétaire">
+        <option value="">Tous les propriétaires</option>
+        @foreach($proprietaires as $pr)
+        <option value="{{ $pr->id }}" {{ request('proprietaire_id') == $pr->id ? 'selected' : '' }}>
+            {{ Str::limit($pr->name, 26) }}
+        </option>
+        @endforeach
+    </select>
+    @endif
 
     {{-- Filtre par bien --}}
     @if($biens->count())
@@ -80,6 +91,11 @@
         <option value="en_attente" {{ request('statut')==='en_attente' ? 'selected' : '' }}>En attente</option>
         <option value="en_retard"  {{ request('statut')==='en_retard'  ? 'selected' : '' }}>En retard</option>
     </select>
+
+    {{-- Filtre par période (mois) --}}
+    <input type="month" name="mois" value="{{ request('mois') }}"
+           class="form-control-immo" style="width:auto"
+           onchange="this.form.submit()" title="Filtrer par mois">
 
     {{-- Bouton reset --}}
     @if($hasFilters)

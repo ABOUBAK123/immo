@@ -13,6 +13,24 @@
         @csrf
 
         <h6 class="fw-bold text-primary mb-3">Informations générales</h6>
+
+        @if(auth()->user()->isAdmin())
+        <div class="row g-3 mb-3">
+            <div class="col-12">
+                <label class="form-label fw-semibold">Propriétaire <span class="text-danger">*</span></label>
+                <select name="proprietaire_id" class="form-select @error('proprietaire_id') is-invalid @enderror" required>
+                    <option value="">— Sélectionner un propriétaire —</option>
+                    @foreach($proprietaires as $p)
+                    <option value="{{ $p->id }}" {{ old('proprietaire_id') == $p->id ? 'selected' : '' }}>
+                        {{ $p->name }}
+                    </option>
+                    @endforeach
+                </select>
+                @error('proprietaire_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+        </div>
+        @endif
+
         <div class="row g-3 mb-3">
             <div class="col-sm-8">
                 <label class="form-label fw-semibold">Titre <span class="text-danger">*</span></label>

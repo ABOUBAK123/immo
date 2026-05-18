@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bien;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -21,12 +22,17 @@ class BienController extends Controller
 
     public function create()
     {
-        return view('biens.create');
+        $proprietaires = Auth::user()->isAdmin()
+            ? User::where('role', 'proprietaire')->orderBy('name')->get(['id', 'name'])
+            : collect();
+        return view('biens.create', compact('proprietaires'));
     }
 
     public function store(Request $request)
     {
+        $isAdmin = Auth::user()->isAdmin();
         $data = $request->validate([
+            'proprietaire_id'    => $isAdmin ? 'required|exists:users,id' : 'nullable',
             'titre'              => 'required|string|max:255',
             'type'               => 'required|in:appartement,maison,villa,studio,bureau,commerce,terrain',
             'nom_residence'      => 'nullable|string|max:255',
@@ -49,7 +55,9 @@ class BienController extends Controller
             'photos.*'           => 'nullable|image|max:5120',
         ]);
 
-        $data['proprietaire_id'] = Auth::id();
+        if (!$isAdmin) {
+            $data['proprietaire_id'] = Auth::id();
+        }
         $data['meuble'] = $request->boolean('meuble');
 
         if ($request->hasFile('photos')) {
@@ -74,14 +82,19 @@ class BienController extends Controller
     public function edit(Bien $bien)
     {
         $this->authoriser($bien);
-        return view('biens.edit', compact('bien'));
+        $proprietaires = Auth::user()->isAdmin()
+            ? User::where('role', 'proprietaire')->orderBy('name')->get(['id', 'name'])
+            : collect();
+        return view('biens.edit', compact('bien', 'proprietaires'));
     }
 
     public function update(Request $request, Bien $bien)
     {
         $this->authoriser($bien);
+        $isAdmin = Auth::user()->isAdmin();
 
         $data = $request->validate([
+            'proprietaire_id'    => $isAdmin ? 'required|exists:users,id' : 'nullable',
             'titre'              => 'required|string|max:255',
             'type'               => 'required|in:appartement,maison,villa,studio,bureau,commerce,terrain',
             'nom_residence'      => 'nullable|string|max:255',
