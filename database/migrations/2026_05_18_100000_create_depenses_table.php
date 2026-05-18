@@ -18,7 +18,8 @@ return new class extends Migration
             ])->default('autres');
             $table->date('date_depense');
             $table->text('notes')->nullable();
-            $table->foreignId('created_by')->constrained('users')->cascadeOnDelete();
+            $table->unsignedBigInteger('created_by');
+            $table->index('created_by');
             $table->timestamps();
         });
     }

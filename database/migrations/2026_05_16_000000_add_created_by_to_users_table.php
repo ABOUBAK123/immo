@@ -9,14 +9,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete()->after('statut');
+            $table->unsignedBigInteger('created_by')->nullable()->after('statut');
         });
     }
 
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropForeign(['created_by']);
             $table->dropColumn('created_by');
         });
     }
