@@ -14,22 +14,17 @@
 
         <h6 class="fw-bold text-primary mb-3">Informations générales</h6>
 
-        @if(auth()->user()->isAdmin())
         <div class="row g-3 mb-3">
             <div class="col-12">
-                <label class="form-label fw-semibold">Propriétaire <span class="text-danger">*</span></label>
-                <select name="proprietaire_id" class="form-select @error('proprietaire_id') is-invalid @enderror" required>
-                    <option value="">— Sélectionner un propriétaire —</option>
-                    @foreach($proprietaires as $p)
-                    <option value="{{ $p->id }}" {{ old('proprietaire_id') == $p->id ? 'selected' : '' }}>
-                        {{ $p->name }}
-                    </option>
-                    @endforeach
-                </select>
-                @error('proprietaire_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                <label class="form-label fw-semibold">Nom du propriétaire <span class="text-danger">*</span></label>
+                <input type="text" name="nom_proprietaire"
+                       class="form-control @error('nom_proprietaire') is-invalid @enderror"
+                       value="{{ old('nom_proprietaire') }}"
+                       placeholder="Ex : M. Coulibaly, Société Immo SA…" required>
+                @error('nom_proprietaire')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                <div class="form-text">Nom réel du propriétaire du bien (peut différer du compte gestionnaire).</div>
             </div>
         </div>
-        @endif
 
         <div class="row g-3 mb-3">
             <div class="col-sm-8">

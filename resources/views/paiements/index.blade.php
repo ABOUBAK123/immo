@@ -2,7 +2,7 @@
 @section('title', 'Paiements')
 @section('page-title', 'Paiements')
 
-@php $hasFilters = request()->hasAny(['statut','bien_id','residence','locataire_id','proprietaire_id','mois']); @endphp
+@php $hasFilters = request()->hasAny(['statut','bien_id','residence','locataire_id','nom_proprietaire','mois']); @endphp
 @push('styles')
 <style>
 /* ── Canal card (choix paiement mobile) ── */
@@ -36,13 +36,13 @@
 
 <form method="GET" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
 
-    {{-- Filtre par propriétaire (admin uniquement) --}}
-    @if(auth()->user()->isAdmin() && $proprietaires->count())
-    <select name="proprietaire_id" class="form-select-immo" style="width:auto;max-width:200px" onchange="this.form.submit()" title="Filtrer par propriétaire">
+    {{-- Filtre par nom propriétaire --}}
+    @if($nomsProprietaires->count())
+    <select name="nom_proprietaire" class="form-select-immo" style="width:auto;max-width:200px" onchange="this.form.submit()" title="Filtrer par propriétaire">
         <option value="">Tous les propriétaires</option>
-        @foreach($proprietaires as $pr)
-        <option value="{{ $pr->id }}" {{ request('proprietaire_id') == $pr->id ? 'selected' : '' }}>
-            {{ Str::limit($pr->name, 26) }}
+        @foreach($nomsProprietaires as $np)
+        <option value="{{ $np }}" {{ request('nom_proprietaire') === $np ? 'selected' : '' }}>
+            {{ Str::limit($np, 26) }}
         </option>
         @endforeach
     </select>

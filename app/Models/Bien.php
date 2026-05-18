@@ -30,7 +30,7 @@ class Bien extends Model
     }
 
     protected $fillable = [
-        'proprietaire_id', 'agent_id', 'titre', 'type', 'nom_residence', 'surface', 'nb_pieces', 'nb_chambres',
+        'proprietaire_id', 'nom_proprietaire', 'agent_id', 'titre', 'type', 'nom_residence', 'surface', 'nb_pieces', 'nb_chambres',
         'nb_sdb', 'etage', 'adresse', 'ville', 'code_postal', 'pays',
         'latitude', 'longitude', 'description', 'statut', 'meuble',
         'prix_achat', 'valeur_estimee', 'annee_construction', 'dpe', 'photos',

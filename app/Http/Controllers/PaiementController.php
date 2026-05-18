@@ -23,13 +23,13 @@ class PaiementController extends Controller
 {
     public function index(Request $request)
     {
-        $user           = Auth::user();
-        $statut         = $request->statut;
-        $bienId         = $request->bien_id;
-        $residence      = $request->residence;
-        $locataireId    = $request->locataire_id;
-        $proprietaireId = $request->proprietaire_id;
-        $mois           = $request->mois; // format YYYY-MM
+        $user            = Auth::user();
+        $statut          = $request->statut;
+        $bienId          = $request->bien_id;
+        $residence       = $request->residence;
+        $locataireId     = $request->locataire_id;
+        $nomProprietaire = $request->nom_proprietaire;
+        $mois            = $request->mois; // format YYYY-MM
 
         $query = match ($user->role) {
             'admin'        => Paiement::with('location.bien', 'location.locataire', 'quittance'),
@@ -58,9 +58,9 @@ class PaiementController extends Controller
             $query->whereHas('location', fn($q) => $q->where('locataire_id', $locataireId));
         }
 
-        // Filtre par propriétaire (admin uniquement)
-        if ($proprietaireId && $user->isAdmin()) {
-            $query->whereHas('location.bien', fn($q) => $q->where('proprietaire_id', $proprietaireId));
+        // Filtre par nom_proprietaire (champ texte libre sur le bien)
+        if ($nomProprietaire) {
+            $query->whereHas('location.bien', fn($q) => $q->where('nom_proprietaire', $nomProprietaire));
         }
 
         // Filtre par période (mois YYYY-MM)
@@ -69,28 +69,23 @@ class PaiementController extends Controller
             $query->whereYear('date_echeance', $annee)->whereMonth('date_echeance', $m);
         }
 
+        // Liste des noms propriétaires distincts (pour le filtre dropdown)
+        $nomsProprietaires = match ($user->role) {
+            'admin'        => Bien::whereNotNull('nom_proprietaire')->distinct()->orderBy('nom_proprietaire')->pluck('nom_proprietaire'),
+            'proprietaire' => Bien::where('proprietaire_id', $user->id)->whereNotNull('nom_proprietaire')->distinct()->orderBy('nom_proprietaire')->pluck('nom_proprietaire'),
+            default        => collect(),
+        };
+
         // Options pour les filtres (scopées au rôle)
-        $proprietaires = $user->isAdmin()
-            ? User::where('role', 'proprietaire')->orderBy('name')->get(['id', 'name'])
-            : collect();
-
-        $bienScope = $user->isAdmin()
-            ? Bien::query()
-            : Bien::where('proprietaire_id', $user->id);
-
-        if ($proprietaireId && $user->isAdmin()) {
-            $bienScope->where('proprietaire_id', $proprietaireId);
-        }
-
         [$biens, $residences, $locataires] = match ($user->role) {
             'admin' => [
-                (clone $bienScope)->orderBy('titre')->get(['id', 'titre', 'nom_residence']),
-                (clone $bienScope)->whereNotNull('nom_residence')->distinct()->orderBy('nom_residence')->pluck('nom_residence'),
+                Bien::orderBy('titre')->get(['id', 'titre', 'nom_residence']),
+                Bien::whereNotNull('nom_residence')->distinct()->orderBy('nom_residence')->pluck('nom_residence'),
                 User::where('role', 'locataire')->orderBy('name')->get(['id', 'name']),
             ],
             'proprietaire' => [
-                $bienScope->orderBy('titre')->get(['id', 'titre', 'nom_residence']),
-                (clone $bienScope)->whereNotNull('nom_residence')->distinct()->orderBy('nom_residence')->pluck('nom_residence'),
+                Bien::where('proprietaire_id', $user->id)->orderBy('titre')->get(['id', 'titre', 'nom_residence']),
+                Bien::where('proprietaire_id', $user->id)->whereNotNull('nom_residence')->distinct()->orderBy('nom_residence')->pluck('nom_residence'),
                 User::whereIn('id', Location::whereHas('bien', fn($q) => $q->where('proprietaire_id', $user->id))->pluck('locataire_id'))->orderBy('name')->get(['id', 'name']),
             ],
             default => [collect(), collect(), collect()],
@@ -136,7 +131,7 @@ class PaiementController extends Controller
             ->selectRaw('bien_id, SUM(cout) as total')
             ->pluck('total', 'bien_id');
 
-        return view('paiements.index', compact('paiements', 'biens', 'residences', 'locataires', 'proprietaires', 'dernierPaiementPaye', 'interventionsMois'));
+        return view('paiements.index', compact('paiements', 'biens', 'residences', 'locataires', 'nomsProprietaires', 'dernierPaiementPaye', 'interventionsMois'));
     }
 
     public function export(Request $request)
