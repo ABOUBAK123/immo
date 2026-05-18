@@ -115,15 +115,23 @@ class LocationController extends Controller
 
     private function genererPaiements(Location $location): void
     {
-        $debut = \Carbon\Carbon::parse($location->date_debut);
-        for ($i = 0; $i < 12; $i++) {
+        $debut   = \Carbon\Carbon::parse($location->date_debut)->startOfMonth();
+        $finDate = $location->date_fin
+            ? \Carbon\Carbon::parse($location->date_fin)->startOfMonth()
+            : \Carbon\Carbon::now()->endOfYear()->startOfMonth();
+
+        $current = $debut->copy();
+        $count   = 0;
+        while ($current->lte($finDate) && $count < 120) {
             Paiement::create([
                 'location_id'   => $location->id,
                 'montant'       => $location->montant_total,
-                'date_echeance' => $debut->copy()->addMonths($i),
+                'date_echeance' => $current->copy(),
                 'statut'        => 'en_attente',
                 'type'          => 'loyer',
             ]);
+            $current->addMonth();
+            $count++;
         }
     }
 

@@ -64,9 +64,12 @@
                 </div>
             </td>
             <td>
-                <div style="font-weight:700;font-size:.9rem">{{ number_format($loc->loyer_mensuel + $loc->charges, 0, ',', ' ') }} {{ $sym }}<span style="font-weight:400;font-size:.72rem;color:#9CA3AF">/mois</span></div>
+                <div style="font-weight:700;font-size:.9rem">{{ number_format($loc->montant_total, 0, ',', ' ') }} {{ $sym }}<span style="font-weight:400;font-size:.72rem;color:#9CA3AF">/mois</span></div>
                 @if($loc->charges)
                 <div style="font-size:.7rem;color:#9CA3AF">dont {{ number_format($loc->charges, 0, ',', ' ') }} {{ $sym }} charges</div>
+                @endif
+                @if($loc->frais_agence > 0)
+                <div style="font-size:.7rem;color:#9CA3AF">+ {{ $loc->frais_agence }}% agence</div>
                 @endif
             </td>
             <td>
@@ -85,10 +88,18 @@
                     {{ ucfirst(str_replace('_', ' ', $loc->statut)) }}
                 </span>
             </td>
-            <td>
-                <a href="{{ route('locations.show', $loc) }}" class="btn-ghost" style="padding:5px 10px;font-size:.75rem">
-                    <i class="bi bi-eye"></i> Voir
-                </a>
+            <td style="white-space:nowrap">
+                <div style="display:flex;gap:6px">
+                    <a href="{{ route('locations.show', $loc) }}" class="btn-ghost" style="padding:5px 10px;font-size:.75rem">
+                        <i class="bi bi-eye"></i> Voir
+                    </a>
+                    @if(in_array(auth()->user()->role, ['admin','proprietaire']))
+                    <a href="{{ route('locations.edit', $loc) }}" class="btn-ghost"
+                       style="padding:5px 10px;font-size:.75rem;color:#2563EB;border-color:#BFDBFE">
+                        <i class="bi bi-pencil"></i> Modifier
+                    </a>
+                    @endif
+                </div>
             </td>
         </tr>
         @endforeach
