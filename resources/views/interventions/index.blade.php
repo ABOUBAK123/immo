@@ -28,7 +28,7 @@
                 </div>
                 <h6 class="fw-bold mb-1">{{ $i->titre }}</h6>
                 <p class="text-muted small mb-2">
-                    <i class="bi bi-building me-1"></i>{{ $i->bien->titre }}
+                    <i class="bi bi-building me-1"></i>{{ optional($i->bien)->titre ?? '—' }}
                 </p>
                 <p class="text-muted small mb-2">{{ Str::limit($i->description, 80) }}</p>
                 <div class="d-flex justify-content-between align-items-center mt-3 small text-muted">
