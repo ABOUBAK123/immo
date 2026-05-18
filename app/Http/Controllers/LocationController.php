@@ -55,6 +55,8 @@ class LocationController extends Controller
             'conditions_particulieres' => 'nullable|string',
         ]);
 
+        $data['charges']        = $data['charges']        ?? 0;
+        $data['depot_garantie'] = $data['depot_garantie'] ?? 0;
         $data['statut'] = 'actif';
         $location = Location::create($data);
 
