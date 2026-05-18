@@ -23,8 +23,15 @@
             <h6 class="fw-bold mb-3">Détails du contrat</h6>
             <div class="row g-3 small">
                 <div class="col-sm-4"><strong>Loyer :</strong> {{ number_format($location->loyer_mensuel, 0, ',', ' ') }} {{ $sym }}/mois</div>
-                <div class="col-sm-4"><strong>Charges :</strong> {{ number_format($location->charges, 0, ',', ' ') }} {{ $sym }}/mois</div>
-                <div class="col-sm-4"><strong>Total :</strong> <span class="text-primary fw-bold">{{ number_format($location->montant_total, 0, ',', ' ') }} {{ $sym }}/mois</span></div>
+                <div class="col-sm-4"><strong>Charges locatives :</strong> {{ number_format($location->charges, 0, ',', ' ') }} {{ $sym }}/mois</div>
+                <div class="col-sm-4"><strong>Frais d'agence :</strong>
+                    @if($location->frais_agence > 0)
+                        {{ $location->frais_agence }}% — {{ number_format($location->montant_frais_agence, 0, ',', ' ') }} {{ $sym }}/mois
+                    @else
+                        <span class="text-muted">—</span>
+                    @endif
+                </div>
+                <div class="col-sm-4"><strong>Total locataire :</strong> <span class="text-primary fw-bold">{{ number_format($location->montant_total, 0, ',', ' ') }} {{ $sym }}/mois</span></div>
                 <div class="col-sm-4"><strong>Dépôt garantie :</strong> {{ number_format($location->depot_garantie, 0, ',', ' ') }} {{ $sym }}</div>
                 <div class="col-sm-4"><strong>Début :</strong> {{ $location->date_debut->format('d/m/Y') }}</div>
                 <div class="col-sm-4"><strong>Fin :</strong> {{ $location->date_fin ? $location->date_fin->format('d/m/Y') : 'Sans terme fixe' }}</div>

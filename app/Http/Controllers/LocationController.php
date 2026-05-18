@@ -50,12 +50,14 @@ class LocationController extends Controller
             'date_fin'               => 'nullable|date|after:date_debut',
             'loyer_mensuel'          => 'required|numeric|min:0',
             'charges'                => 'nullable|numeric|min:0',
+            'frais_agence'           => 'nullable|numeric|min:0|max:100',
             'depot_garantie'         => 'nullable|numeric|min:0',
             'type_bail'              => 'required|in:meuble,vide,etudiant,mobilite',
             'conditions_particulieres' => 'nullable|string',
         ]);
 
         $data['charges']        = $data['charges']        ?? 0;
+        $data['frais_agence']   = $data['frais_agence']   ?? 0;
         $data['depot_garantie'] = $data['depot_garantie'] ?? 0;
         $data['statut'] = 'actif';
         $location = Location::create($data);
@@ -92,9 +94,12 @@ class LocationController extends Controller
         $data = $request->validate([
             'loyer_mensuel'  => 'required|numeric|min:0',
             'charges'        => 'nullable|numeric|min:0',
+            'frais_agence'   => 'nullable|numeric|min:0|max:100',
             'statut'         => 'required|in:en_attente,actif,resilie,termine',
             'date_fin'       => 'nullable|date',
         ]);
+        $data['charges']      = $data['charges']      ?? 0;
+        $data['frais_agence'] = $data['frais_agence'] ?? 0;
 
         $location->update($data);
         return redirect()->route('locations.show', $location)->with('success', 'Location mise à jour.');
@@ -114,7 +119,7 @@ class LocationController extends Controller
         for ($i = 0; $i < 12; $i++) {
             Paiement::create([
                 'location_id'   => $location->id,
-                'montant'       => $location->loyer_mensuel + $location->charges,
+                'montant'       => $location->montant_total,
                 'date_echeance' => $debut->copy()->addMonths($i),
                 'statut'        => 'en_attente',
                 'type'          => 'loyer',

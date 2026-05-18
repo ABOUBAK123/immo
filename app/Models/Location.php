@@ -12,7 +12,7 @@ class Location extends Model
 
     protected $fillable = [
         'bien_id', 'locataire_id', 'date_debut', 'date_fin', 'loyer_mensuel',
-        'charges', 'depot_garantie', 'type_bail', 'statut',
+        'charges', 'frais_agence', 'depot_garantie', 'type_bail', 'statut',
         'revision_loyer_date', 'index_irl', 'conditions_particulieres',
     ];
 
@@ -22,6 +22,7 @@ class Location extends Model
         'revision_loyer_date' => 'date',
         'loyer_mensuel'       => 'decimal:2',
         'charges'             => 'decimal:2',
+        'frais_agence'        => 'decimal:2',
         'depot_garantie'      => 'decimal:2',
     ];
 
@@ -32,6 +33,12 @@ class Location extends Model
 
     public function getMontantTotalAttribute(): float
     {
-        return (float) $this->loyer_mensuel + (float) $this->charges;
+        $frais = round((float) $this->loyer_mensuel * (float) $this->frais_agence / 100, 2);
+        return (float) $this->loyer_mensuel + (float) $this->charges + $frais;
+    }
+
+    public function getMontantFraisAgenceAttribute(): float
+    {
+        return round((float) $this->loyer_mensuel * (float) $this->frais_agence / 100, 2);
     }
 }

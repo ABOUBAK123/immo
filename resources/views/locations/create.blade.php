@@ -64,17 +64,46 @@
         <div class="row g-3 mb-3">
             <div class="col-sm-4">
                 <label class="form-label fw-semibold">Loyer mensuel ({{ $sym }}) <span class="text-danger">*</span></label>
-                <input type="number" name="loyer_mensuel" class="form-control @error('loyer_mensuel') is-invalid @enderror"
-                       value="{{ old('loyer_mensuel') }}" min="0" step="0.01" required>
+                <input type="number" id="loyer_mensuel" name="loyer_mensuel"
+                       class="form-control @error('loyer_mensuel') is-invalid @enderror"
+                       value="{{ old('loyer_mensuel') }}" min="0" step="0.01" required
+                       oninput="calculerTotal()">
                 @error('loyer_mensuel')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
             <div class="col-sm-4">
-                <label class="form-label fw-semibold">Charges ({{ $sym }})</label>
-                <input type="number" name="charges" class="form-control" value="{{ old('charges', 0) }}" min="0" step="0.01">
+                <label class="form-label fw-semibold">Charges locatives ({{ $sym }})</label>
+                <input type="number" id="charges" name="charges" class="form-control"
+                       value="{{ old('charges', 0) }}" min="0" step="0.01"
+                       oninput="calculerTotal()">
+                <div class="form-text">Entretien parties communes, eau, ordures…</div>
             </div>
             <div class="col-sm-4">
                 <label class="form-label fw-semibold">Dépôt de garantie ({{ $sym }})</label>
                 <input type="number" name="depot_garantie" class="form-control" value="{{ old('depot_garantie', 0) }}" min="0" step="0.01">
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-4">
+                <label class="form-label fw-semibold">Frais d'agence (%)</label>
+                <div class="input-group">
+                    <input type="number" id="frais_agence" name="frais_agence"
+                           class="form-control @error('frais_agence') is-invalid @enderror"
+                           value="{{ old('frais_agence', 0) }}" min="0" max="100" step="0.01"
+                           oninput="calculerTotal()">
+                    <span class="input-group-text">%</span>
+                </div>
+                <div class="form-text">% du loyer mensuel reversé à l'agence</div>
+                @error('frais_agence')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+            <div class="col-sm-8">
+                <label class="form-label fw-semibold">Total mensuel locataire</label>
+                <div id="totalMensuel"
+                     style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;
+                            padding:10px 14px;font-weight:700;font-size:1rem;color:#15803D">
+                    — {{ $sym }}/mois
+                </div>
+                <div class="form-text">Loyer + Charges + Frais d'agence</div>
             </div>
         </div>
 
@@ -97,4 +126,23 @@
         </div>
     </form>
 </div>
+
+<script>
+function calculerTotal() {
+    const loyer  = parseFloat(document.getElementById('loyer_mensuel').value)  || 0;
+    const charges = parseFloat(document.getElementById('charges').value)        || 0;
+    const pct    = parseFloat(document.getElementById('frais_agence').value)    || 0;
+    const frais  = Math.round(loyer * pct / 100);
+    const total  = loyer + charges + frais;
+
+    let detail = '';
+    if (pct > 0) {
+        detail = loyer.toLocaleString('fr-FR') + ' + ' + charges.toLocaleString('fr-FR')
+               + ' + ' + frais.toLocaleString('fr-FR') + ' (agence) = ';
+    }
+    document.getElementById('totalMensuel').textContent =
+        detail + total.toLocaleString('fr-FR') + ' {{ $sym }}/mois';
+}
+calculerTotal();
+</script>
 @endsection

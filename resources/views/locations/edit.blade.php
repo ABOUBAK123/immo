@@ -13,11 +13,33 @@
         <div class="row g-3 mb-3">
             <div class="col-sm-6">
                 <label class="form-label fw-semibold">Loyer mensuel ({{ $sym }})</label>
-                <input type="number" name="loyer_mensuel" class="form-control" value="{{ old('loyer_mensuel', $location->loyer_mensuel) }}" min="0" step="0.01" required>
+                <input type="number" name="loyer_mensuel" class="form-control"
+                       value="{{ old('loyer_mensuel', $location->loyer_mensuel) }}" min="0" step="0.01" required>
             </div>
             <div class="col-sm-6">
-                <label class="form-label fw-semibold">Charges ({{ $sym }})</label>
-                <input type="number" name="charges" class="form-control" value="{{ old('charges', $location->charges) }}" min="0" step="0.01">
+                <label class="form-label fw-semibold">Charges locatives ({{ $sym }})</label>
+                <input type="number" name="charges" class="form-control"
+                       value="{{ old('charges', $location->charges) }}" min="0" step="0.01">
+            </div>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-sm-6">
+                <label class="form-label fw-semibold">Frais d'agence (%)</label>
+                <div class="input-group">
+                    <input type="number" name="frais_agence" class="form-control"
+                           value="{{ old('frais_agence', $location->frais_agence) }}"
+                           min="0" max="100" step="0.01">
+                    <span class="input-group-text">%</span>
+                </div>
+                <div class="form-text">% du loyer mensuel reversé à l'agence</div>
+            </div>
+            <div class="col-sm-6">
+                <label class="form-label fw-semibold">Total mensuel actuel</label>
+                <div style="background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;
+                            padding:10px 14px;font-weight:700;color:#15803D">
+                    {{ number_format($location->montant_total, 0, ',', ' ') }} {{ $sym }}/mois
+                </div>
             </div>
         </div>
 
