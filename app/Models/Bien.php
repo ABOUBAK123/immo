@@ -10,6 +10,25 @@ class Bien extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected static function boot(): void
+    {
+        parent::boot();
+
+        static::deleting(function (Bien $bien) {
+            foreach ($bien->locations()->withTrashed()->get() as $location) {
+                foreach ($location->paiements as $paiement) {
+                    $paiement->quittance?->delete();
+                    $paiement->delete();
+                }
+                $location->documents()->delete();
+                $location->forceDelete();
+            }
+            $bien->interventions()->delete();
+            $bien->documents()->delete();
+            $bien->annonces()->delete();
+        });
+    }
+
     protected $fillable = [
         'proprietaire_id', 'agent_id', 'titre', 'type', 'nom_residence', 'surface', 'nb_pieces', 'nb_chambres',
         'nb_sdb', 'etage', 'adresse', 'ville', 'code_postal', 'pays',
