@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\GestionController;
+use App\Http\Controllers\DepenseController;
 use App\Http\Controllers\Admin\ParametreController;
 use App\Http\Controllers\Admin\ProfilConfigController;
 use App\Http\Controllers\Agent\PublicationController;
@@ -114,6 +115,12 @@ Route::middleware(['auth', 'check.abonnement'])->group(function () {
     Route::post('/abonnements/webhook',              [AbonnementController::class, 'webhook'])->name('abonnements.webhook')->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
     Route::get('/quittances/{quittance}',             [PaiementController::class, 'telechargerQuittance'])->name('quittances.pdf');
     Route::get('/quittances/{quittance}/telecharger', [PaiementController::class, 'downloadQuittancePdf'])->name('quittances.download');
+
+    // Dépenses agence
+    Route::get('/depenses',                  [DepenseController::class, 'index'])->name('depenses.index');
+    Route::post('/depenses',                 [DepenseController::class, 'store'])->name('depenses.store');
+    Route::delete('/depenses/{depense}',     [DepenseController::class, 'destroy'])->name('depenses.destroy');
+    Route::get('/depenses/point',            [DepenseController::class, 'point'])->name('depenses.point');
 
     // Annonces (gestion)
     Route::resource('annonces', AnnonceController::class)->except(['show']);

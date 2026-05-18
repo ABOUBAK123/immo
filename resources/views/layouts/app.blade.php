@@ -327,7 +327,7 @@
         @endif
         @endif
 
-        @php $hasFin = $m('paiements') || $m('interventions'); @endphp
+        @php $hasFin = $m('paiements') || $m('interventions') || $m('depenses'); @endphp
         @if($hasFin)
         <div class="sidebar-section">Finance</div>
         @if($m('paiements'))
@@ -340,6 +340,12 @@
         <a href="{{ route('interventions.index') }}"
            class="nav-item-custom {{ request()->routeIs('interventions.*') ? 'active' : '' }}">
             <i class="bi bi-tools"></i> Interventions
+        </a>
+        @endif
+        @if($m('depenses'))
+        <a href="{{ route('depenses.index') }}"
+           class="nav-item-custom {{ request()->routeIs('depenses.*') ? 'active' : '' }}">
+            <i class="bi bi-receipt-cutoff"></i> Dépenses
         </a>
         @endif
         @endif
