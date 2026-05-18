@@ -8,6 +8,7 @@
 </a>
 @endsection
 
+@php $sym = auth()->user()->deviseSymbole(); @endphp
 @section('content')
 
 @if(session('success'))
@@ -71,7 +72,7 @@
                 @if($locataire->locations->first())
                     @php $loc = $locataire->locations->first(); @endphp
                     <div style="font-size:.8rem;font-weight:500">{{ Str::limit(optional($loc->bien)->titre ?? '—', 25) }}</div>
-                    <div style="font-size:.72rem;color:#9CA3AF">{{ number_format($loc->loyer_mensuel, 0, ',', ' ') }} €/mois</div>
+                    <div style="font-size:.72rem;color:#9CA3AF">{{ number_format($loc->loyer_mensuel, 0, ',', ' ') }} {{ $sym }}/mois</div>
                 @else
                     <span style="color:#9CA3AF;font-size:.8rem">—</span>
                 @endif
