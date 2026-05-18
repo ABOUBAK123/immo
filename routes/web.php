@@ -108,6 +108,7 @@ Route::middleware(['auth', 'check.abonnement'])->group(function () {
     Route::get('/paiements',                          [PaiementController::class, 'index'])->name('paiements.index');
     Route::patch('/paiements/{paiement}/payer',       [PaiementController::class, 'marquerPaye'])->name('paiements.payer');
     Route::post('/paiements/{paiement}/relance',      [PaiementController::class, 'relance'])->name('paiements.relance');
+    Route::delete('/paiements/{paiement}',            [PaiementController::class, 'destroy'])->name('paiements.destroy');
     Route::post('/paiements/{paiement}/mobile',       [PaiementController::class, 'initierMobile'])->name('paiements.mobile');
     Route::get('/paiements/export',                   [PaiementController::class, 'export'])->name('paiements.export');
     Route::get('/paiements/retour-mobile',            [PaiementController::class, 'retourMobile'])->name('paiements.retour-mobile');

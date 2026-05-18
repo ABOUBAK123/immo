@@ -343,6 +343,17 @@
                     {{-- Payé : lien quittance déjà affiché dans la colonne Quittance --}}
                     <span style="font-size:.72rem;color:#9CA3AF">—</span>
                 @endif
+                @if(!$isLocataire)
+                <form method="POST" action="{{ route('paiements.destroy', $p) }}"
+                      onsubmit="return confirm('Supprimer ce paiement ?')" style="display:inline;margin-left:4px">
+                    @csrf @method('DELETE')
+                    <button type="submit" class="btn-ghost"
+                            style="padding:4px 8px;font-size:.72rem;color:#DC2626;border-color:#FECDD3"
+                            title="Supprimer">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </form>
+                @endif
             </td>
         </tr>
         @endforeach

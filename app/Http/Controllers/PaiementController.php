@@ -340,6 +340,18 @@ class PaiementController extends Controller
         }
     }
 
+    // ─── Supprimer un paiement ───────────────────────────────────────────────
+    public function destroy(Paiement $paiement)
+    {
+        $user = Auth::user();
+        abort_if($user->isLocataire(), 403);
+
+        $paiement->quittance?->delete();
+        $paiement->delete();
+
+        return back()->with('success', 'Paiement supprimé.');
+    }
+
     // ─── Retour depuis la passerelle ─────────────────────────────────────────
     public function retourMobile(Request $request)
     {
