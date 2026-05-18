@@ -210,14 +210,24 @@
     </div>
 </div>
 
-{{-- ── Détail du paiement ──────────────────────────────────────────────────── --}}
+{{-- ── Attestation (avec détail paiement et mode de paiement intégrés) ──────── --}}
 <div class="border-box">
-    <div class="section-title">Détail du Paiement</div>
-    <div class="section-body" style="padding-bottom:6px">
-        <div style="margin-bottom:8px;font-weight:700">
-            Période concernée : {{ $periodeLabel }}
-            (du {{ $periodeDebut->format('d/m/Y') }} au {{ $periodeFin->format('d/m/Y') }})
-        </div>
+    <div class="section-title">Attestation</div>
+    <div class="attestation-text">
+        <p>
+            Je soussigné(e), <strong>{{ strtoupper($proprietaire?->name ?? '—') }}</strong>,
+            bailleur du bien ci-dessus désigné, reconnais avoir reçu de
+            <strong>{{ strtoupper($locataire?->name ?? '—') }}</strong>, locataire, la somme de :
+        </p>
+        <div class="montant-lettres">{{ $montantLettres }}</div>
+        <p>
+            au titre du loyer et des charges pour la période de <strong>{{ $periodeLabel }}</strong>
+            (du {{ $periodeDebut->format('d/m/Y') }} au {{ $periodeFin->format('d/m/Y') }}).
+        </p>
+    </div>
+
+    {{-- Détail du paiement intégré --}}
+    <div class="section-body" style="padding-top:0;padding-bottom:6px">
         <table class="payment-table">
             <thead>
                 <tr>
@@ -251,59 +261,52 @@
             </tbody>
         </table>
     </div>
-</div>
 
-{{-- ── Mode de paiement ────────────────────────────────────────────────────── --}}
-<div class="border-box">
-    <div class="section-title">Mode de Paiement</div>
-    <div class="modes-grid">
-        @foreach([
-            ['virement', 'Virement bancaire'],
-            ['especes',  'Espèces'],
-            ['mobile',   'Mobile Money (' . $operateurMobile . ')'],
-            ['cheque',   'Chèque'],
-            ['carte',    'Carte bancaire (CB / Visa / Mastercard)'],
-        ] as [$code, $label])
-        <div class="mode-item">
-            <span class="checkbox {{ $modePaye === $code ? 'checked' : '' }}">{{ $modePaye === $code ? '✓' : '' }}</span>
-            {{ $label }}
+    {{-- Mode de paiement intégré --}}
+    <div style="border-top:1px solid #e5e7eb;padding:8px 12px">
+        <div style="font-size:10px;font-weight:700;color:#555;text-transform:uppercase;margin-bottom:6px">
+            Mode de paiement :
         </div>
-        @endforeach
-    </div>
-    @if($refTransaction || $paiement->date_paiement)
-    <div style="padding:4px 12px 8px;display:flex;gap:24px;flex-wrap:wrap;border-top:1px solid #eee">
-        @if($refTransaction)
-        <div>
-            <span style="font-weight:700;font-size:10px;color:#555;text-transform:uppercase">Référence transaction :</span>
-            <span style="font-family:monospace;font-weight:700;margin-left:6px">{{ $refTransaction }}</span>
+        <div class="modes-grid">
+            @foreach([
+                ['virement', 'Virement bancaire'],
+                ['especes',  'Espèces'],
+                ['mobile',   'Mobile Money (' . $operateurMobile . ')'],
+                ['cheque',   'Chèque'],
+                ['carte',    'Carte bancaire (CB / Visa / Mastercard)'],
+            ] as [$code, $label])
+            <div class="mode-item">
+                <span class="checkbox {{ $modePaye === $code ? 'checked' : '' }}">{{ $modePaye === $code ? '✓' : '' }}</span>
+                {{ $label }}
+            </div>
+            @endforeach
+        </div>
+        @if($refTransaction || $paiement->date_paiement)
+        <div style="margin-top:6px;display:flex;gap:24px;flex-wrap:wrap;border-top:1px solid #eee;padding-top:6px">
+            @if($refTransaction)
+            <div>
+                <span style="font-weight:700;font-size:10px;color:#555;text-transform:uppercase">Référence transaction :</span>
+                <span style="font-family:monospace;font-weight:700;margin-left:6px">{{ $refTransaction }}</span>
+            </div>
+            @endif
+            @if($paiement->date_paiement)
+            <div>
+                <span style="font-weight:700;font-size:10px;color:#555;text-transform:uppercase">Date de réception :</span>
+                <span style="font-weight:700;margin-left:6px">{{ $datePaiement }}</span>
+            </div>
+            @endif
         </div>
         @endif
-        @if($paiement->date_paiement)
-        <div>
-            <span style="font-weight:700;font-size:10px;color:#555;text-transform:uppercase">Date de réception :</span>
-            <span style="font-weight:700;margin-left:6px">{{ $datePaiement }}</span>
-        </div>
-        @endif
     </div>
-    @endif
-</div>
 
-{{-- ── Attestation ─────────────────────────────────────────────────────────── --}}
-<div class="border-box">
-    <div class="section-title">Attestation</div>
-    <div class="attestation-text">
+    {{-- Mention décharge --}}
+    <div class="attestation-text" style="padding-top:8px;border-top:1px solid #e5e7eb">
         <p>
-            Je soussigné(e), <strong>{{ strtoupper($proprietaire?->name ?? '—') }}</strong>,
-            bailleur du bien ci-dessus désigné, reconnais avoir reçu de
-            <strong>{{ strtoupper($locataire?->name ?? '—') }}</strong>, locataire, la somme de :
-        </p>
-        <div class="montant-lettres">{{ $montantLettres }}</div>
-        <p>au titre du loyer et des charges pour la période de <strong>{{ $periodeLabel }}</strong>.</p>
-        <p style="margin-top:8px">
             La présente quittance vaut décharge pour la période concernée et ne préjuge pas des
             éventuelles régularisations de charges en fin d'année conformément au contrat de bail.
         </p>
     </div>
+
     <div class="signature-section">
         <div>
             <div style="font-size:11px;padding:0 0 6px"><strong>Fait à {{ $bien->ville ?? 'Abidjan' }}, le {{ $dateEmission }}</strong></div>
