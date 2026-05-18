@@ -112,6 +112,13 @@
         'wave'         => 'Wave',
         default        => 'Orange Money / Wave / MTN MoMo',
     };
+    $modePaiementLabel = match($modePaye) {
+        'virement' => 'virement bancaire',
+        'cheque'   => 'chèque',
+        'carte'    => 'carte bancaire',
+        'mobile'   => 'Mobile Money (' . $operateurMobile . ')',
+        default    => 'espèces',
+    };
     $montantLettres = \App\Models\Quittance::montantEnLettres((int) $total, $deviseLong);
     $dateEmission   = $quittance->date_emission->isoFormat('D MMMM YYYY');
     $datePaiement   = $paiement->date_paiement ? $paiement->date_paiement->isoFormat('D MMMM YYYY') : $dateEmission;
@@ -221,9 +228,21 @@
         </p>
         <div class="montant-lettres">{{ $montantLettres }}</div>
         <p>
+            en <strong>{{ $modePaiementLabel }}</strong>
             au titre du loyer et des charges pour la période de <strong>{{ $periodeLabel }}</strong>
             (du {{ $periodeDebut->format('d/m/Y') }} au {{ $periodeFin->format('d/m/Y') }}).
         </p>
+        @if($refTransaction || $paiement->date_paiement)
+        <p style="margin-top:4px;font-size:10.5px;color:#444">
+            @if($refTransaction)
+                Réf. transaction : <strong style="font-family:monospace">{{ $refTransaction }}</strong>
+                @if($paiement->date_paiement) &nbsp;·&nbsp; @endif
+            @endif
+            @if($paiement->date_paiement)
+                Date de réception : <strong>{{ $datePaiement }}</strong>
+            @endif
+        </p>
+        @endif
     </div>
 
     {{-- Détail du paiement intégré --}}
@@ -260,43 +279,6 @@
                 </tr>
             </tbody>
         </table>
-    </div>
-
-    {{-- Mode de paiement intégré --}}
-    <div style="border-top:1px solid #e5e7eb;padding:8px 12px">
-        <div style="font-size:10px;font-weight:700;color:#555;text-transform:uppercase;margin-bottom:6px">
-            Mode de paiement :
-        </div>
-        <div class="modes-grid">
-            @foreach([
-                ['virement', 'Virement bancaire'],
-                ['especes',  'Espèces'],
-                ['mobile',   'Mobile Money (' . $operateurMobile . ')'],
-                ['cheque',   'Chèque'],
-                ['carte',    'Carte bancaire (CB / Visa / Mastercard)'],
-            ] as [$code, $label])
-            <div class="mode-item">
-                <span class="checkbox {{ $modePaye === $code ? 'checked' : '' }}">{{ $modePaye === $code ? '✓' : '' }}</span>
-                {{ $label }}
-            </div>
-            @endforeach
-        </div>
-        @if($refTransaction || $paiement->date_paiement)
-        <div style="margin-top:6px;display:flex;gap:24px;flex-wrap:wrap;border-top:1px solid #eee;padding-top:6px">
-            @if($refTransaction)
-            <div>
-                <span style="font-weight:700;font-size:10px;color:#555;text-transform:uppercase">Référence transaction :</span>
-                <span style="font-family:monospace;font-weight:700;margin-left:6px">{{ $refTransaction }}</span>
-            </div>
-            @endif
-            @if($paiement->date_paiement)
-            <div>
-                <span style="font-weight:700;font-size:10px;color:#555;text-transform:uppercase">Date de réception :</span>
-                <span style="font-weight:700;margin-left:6px">{{ $datePaiement }}</span>
-            </div>
-            @endif
-        </div>
-        @endif
     </div>
 
     {{-- Mention décharge --}}

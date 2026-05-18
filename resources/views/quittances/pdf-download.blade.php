@@ -92,6 +92,13 @@
         'wave'         => 'Wave',
         default        => 'Mobile Money',
     };
+    $modePaiementLabel = match($modePaye) {
+        'virement' => 'virement bancaire',
+        'cheque'   => 'chèque',
+        'carte'    => 'carte bancaire',
+        'mobile'   => 'Mobile Money (' . $operateurMobile . ')',
+        default    => 'espèces',
+    };
     $montantLettres = \App\Models\Quittance::montantEnLettres((int) $total, $deviseLong);
     $dateEmission   = $quittance->date_emission->isoFormat('D MMMM YYYY');
     $datePaiement   = $paiement->date_paiement ? $paiement->date_paiement->isoFormat('D MMMM YYYY') : $dateEmission;
@@ -222,34 +229,6 @@
     </div>
 </div>
 
-{{-- ── Mode de paiement ── --}}
-<div class="section">
-    <div class="sec-title">Mode de Paiement</div>
-    <table class="modes-table">
-        <tr>
-            @foreach($modes as $code => $label)
-            <td>
-                <span class="cb {{ $modePaye === $code ? 'on' : '' }}">{{ $modePaye === $code ? 'X' : '&nbsp;' }}</span>
-                {{ $label }}
-            </td>
-            @if($loop->iteration === 3)<tr>@endif
-            @endforeach
-        </tr>
-    </table>
-    @if($refTransaction || $paiement->date_paiement)
-    <div style="padding:4px 10px 7px;border-top:1px solid #eee;font-size:9.5px">
-        @if($refTransaction)
-        <span style="font-weight:700;text-transform:uppercase;color:#555">Réf. transaction :</span>
-        <span style="font-family:monospace;font-weight:700;margin-left:5px">{{ $refTransaction }}</span>
-        @endif
-        @if($paiement->date_paiement)
-        <span style="margin-left:16px;font-weight:700;text-transform:uppercase;color:#555">Date de réception :</span>
-        <span style="font-weight:700;margin-left:5px">{{ $datePaiement }}</span>
-        @endif
-    </div>
-    @endif
-</div>
-
 {{-- ── Attestation ── --}}
 <div class="section">
     <div class="sec-title">Attestation</div>
@@ -260,7 +239,22 @@
             <strong>{{ strtoupper($locataire?->name ?? '—') }}</strong>, locataire, la somme de :
         </p>
         <div class="montant-box">{{ $montantLettres }}</div>
-        <p>au titre du loyer et des charges pour la période de <strong>{{ $periodeLabel }}</strong>.</p>
+        <p>
+            en <strong>{{ $modePaiementLabel }}</strong>
+            au titre du loyer et des charges pour la période de <strong>{{ $periodeLabel }}</strong>
+            (du {{ $periodeDebut->format('d/m/Y') }} au {{ $periodeFin->format('d/m/Y') }}).
+        </p>
+        @if($refTransaction || $paiement->date_paiement)
+        <p style="margin-top:4px;font-size:9.5px;color:#444">
+            @if($refTransaction)
+                Réf. transaction : <strong style="font-family:monospace">{{ $refTransaction }}</strong>
+                @if($paiement->date_paiement) &nbsp;·&nbsp; @endif
+            @endif
+            @if($paiement->date_paiement)
+                Date de réception : <strong>{{ $datePaiement }}</strong>
+            @endif
+        </p>
+        @endif
         <p style="margin-top:7px">
             La présente quittance vaut décharge pour la période concernée et ne préjuge pas des
             éventuelles régularisations de charges en fin d'année conformément au contrat de bail.
