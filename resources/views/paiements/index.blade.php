@@ -183,6 +183,11 @@
                 <th>{{ $isLocataire ? 'Bien' : 'Bien / Locataire' }}</th>
                 <th>Échéance</th>
                 <th>Montant</th>
+                @if(!$isLocataire)
+                <th title="Total des coûts d'interventions sur ce bien pour le mois en cours">
+                    Interv. du mois
+                </th>
+                @endif
                 <th>Statut</th>
                 <th>Date paiement</th>
                 <th>Quittance</th>
@@ -219,6 +224,22 @@
                 @endif
             </td>
             <td style="font-weight:700">{{ number_format($p->montant, 0, ',', ' ') }} {{ $devSymbole }}</td>
+            @if(!$isLocataire)
+            @php $coutInterv = $interventionsMois[$p->location->bien_id] ?? 0; @endphp
+            <td style="font-size:.82rem;white-space:nowrap">
+                @if($coutInterv > 0)
+                <span style="display:inline-flex;align-items:center;gap:4px;
+                             background:#FFF7ED;border:1px solid #FDBA74;
+                             border-radius:6px;padding:3px 8px;
+                             color:#C2410C;font-weight:700">
+                    <i class="bi bi-tools" style="font-size:.72rem"></i>
+                    {{ number_format($coutInterv, 0, ',', ' ') }} {{ $devSymbole }}
+                </span>
+                @else
+                <span style="color:#D1D5DB">—</span>
+                @endif
+            </td>
+            @endif
             <td>
                 @if($p->statut === 'paye')
                 <span class="badge-pill badge-success">

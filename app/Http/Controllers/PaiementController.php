@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Mail\QuittanceMail;
 use App\Services\RelanceIaService;
 use App\Models\Bien;
+use App\Models\Intervention;
 use App\Models\Location;
 use App\Models\Paiement;
 use App\Models\Parametre;
@@ -95,7 +96,22 @@ class PaiementController extends Controller
             ? $query->oldest('date_echeance')->paginate(20)->withQueryString()
             : $query->latest('date_echeance')->paginate(20)->withQueryString();
 
-        return view('paiements.index', compact('paiements', 'biens', 'residences', 'locataires', 'dernierPaiementPaye'));
+        // Coût total des interventions du mois courant, indexé par bien_id
+        $bienIds = match ($user->role) {
+            'admin'        => null,
+            'proprietaire' => $user->biens()->pluck('id'),
+            default        => collect(),
+        };
+        $interventionsMois = Intervention::whereNotNull('cout')
+            ->whereNotNull('date_intervention')
+            ->whereMonth('date_intervention', now()->month)
+            ->whereYear('date_intervention', now()->year)
+            ->when($bienIds !== null, fn($q) => $q->whereIn('bien_id', $bienIds))
+            ->groupBy('bien_id')
+            ->selectRaw('bien_id, SUM(cout) as total')
+            ->pluck('total', 'bien_id');
+
+        return view('paiements.index', compact('paiements', 'biens', 'residences', 'locataires', 'dernierPaiementPaye', 'interventionsMois'));
     }
 
     public function marquerPaye(Request $request, Paiement $paiement)
