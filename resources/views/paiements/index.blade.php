@@ -37,15 +37,25 @@
 <form method="GET" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
 
     {{-- Filtre par nom propriétaire --}}
-    @if($nomsProprietaires->count())
-    <select name="nom_proprietaire" class="form-select-immo" style="width:auto;max-width:200px" onchange="this.form.submit()" title="Filtrer par propriétaire">
-        <option value="">Tous les propriétaires</option>
-        @foreach($nomsProprietaires as $np)
-        <option value="{{ $np }}" {{ request('nom_proprietaire') === $np ? 'selected' : '' }}>
-            {{ Str::limit($np, 26) }}
-        </option>
-        @endforeach
-    </select>
+    @if(!auth()->user()->isLocataire())
+    <div style="position:relative">
+        <input type="text" name="nom_proprietaire"
+               value="{{ request('nom_proprietaire') }}"
+               placeholder="Nom propriétaire…"
+               class="form-control-immo"
+               style="width:180px;padding-right:30px"
+               list="list-proprietaires">
+        <datalist id="list-proprietaires">
+            @foreach($nomsProprietaires as $np)
+            <option value="{{ $np }}">
+            @endforeach
+        </datalist>
+        @if(request('nom_proprietaire'))
+        <a href="{{ request()->fullUrlWithQuery(['nom_proprietaire' => '']) }}"
+           style="position:absolute;right:8px;top:50%;transform:translateY(-50%);
+                  color:#9CA3AF;font-size:.75rem;text-decoration:none;line-height:1">✕</a>
+        @endif
+    </div>
     @endif
 
     {{-- Filtre par bien --}}
