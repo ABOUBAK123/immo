@@ -222,7 +222,7 @@
     @endif
 
     {{-- ── CTA download PWA ── --}}
-    <div style="background:linear-gradient(135deg,#F97316,#EA580C);border-radius:16px;padding:20px;color:#fff;text-align:center;margin-bottom:20px">
+    <div id="pwaCta" style="background:linear-gradient(135deg,#F97316,#EA580C);border-radius:16px;padding:20px;color:#fff;text-align:center;margin-bottom:20px">
         <div style="font-size:1.8rem;margin-bottom:8px">📱</div>
         <div style="font-weight:800;font-size:.95rem;margin-bottom:4px">Installez l'application</div>
         <div style="font-size:.78rem;opacity:.85;margin-bottom:14px">Accédez à ImmoGest comme une vraie app mobile</div>
@@ -239,13 +239,23 @@
 
 @push('scripts')
 <script>
+// Masquer le bloc PWA quand on est dans l'app native Capacitor
+if (window.Capacitor || navigator.userAgent.includes('CapacitorWebView')) {
+    document.addEventListener('DOMContentLoaded', function() {
+        var el = document.getElementById('pwaCta');
+        if (el) el.style.display = 'none';
+    });
+}
+
 let deferredPrompt;
-window.addEventListener('beforeinstallprompt', e => {
-    e.preventDefault();
-    deferredPrompt = e;
-    document.getElementById('installBtn').style.display = 'inline-block';
-    document.getElementById('installInstructions').style.display = 'none';
-});
+if (!window.Capacitor && !navigator.userAgent.includes('CapacitorWebView')) {
+    window.addEventListener('beforeinstallprompt', e => {
+        e.preventDefault();
+        deferredPrompt = e;
+        document.getElementById('installBtn').style.display = 'inline-block';
+        document.getElementById('installInstructions').style.display = 'none';
+    });
+}
 function installPwa() {
     if (deferredPrompt) {
         deferredPrompt.prompt();

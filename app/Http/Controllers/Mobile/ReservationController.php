@@ -99,7 +99,7 @@ class ReservationController extends Controller
     {
         $reservation = Reservation::where('token', $token)->with('annonce.bien')->firstOrFail();
 
-        $request->validate(['canal' => 'required|in:orange_money,mtn_money,wave,carte,virement']);
+        $request->validate(['canal' => 'required|in:orange_money,mtn_money,wave,moov_money,carte,virement']);
         $canal = $request->canal;
 
         $provider = Parametre::get('paiement_provider', 'cinetpay');
@@ -208,6 +208,7 @@ class ReservationController extends Controller
             'orange_money' => 'ORANGE_MONEY',
             'mtn_money'    => 'MTN_MONEY',
             'wave'         => 'WAVE',
+            'moov_money'   => 'MOOV_MONEY',
             'carte'        => 'CREDIT_CARD',
         ];
         $channels = $channelMap[$canal] ?? 'ALL';

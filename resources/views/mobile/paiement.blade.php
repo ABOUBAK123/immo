@@ -140,6 +140,16 @@
         <div class="canal-check"></div>
     </div>
 
+    <div class="canal-card" onclick="selectCanal('moov_money', this)" id="canal-moov_money">
+        <input type="radio" name="canal" value="moov_money">
+        <div class="canal-icon" style="background:#6D28D9">💜</div>
+        <div class="canal-info">
+            <div class="canal-name">Moov Money</div>
+            <div class="canal-desc">Paiement via votre compte Moov Money</div>
+        </div>
+        <div class="canal-check"></div>
+    </div>
+
     <div class="canal-card" onclick="selectCanal('carte', this)" id="canal-carte">
         <input type="radio" name="canal" value="carte">
         <div class="canal-icon" style="background:#1E40AF">💳</div>
@@ -197,7 +207,7 @@ function selectCanal(canal, el) {
     el.classList.add('selected');
     selectedCanal = canal;
 
-    const mobileCanals = ['orange_money', 'mtn_money', 'wave'];
+    const mobileCanals = ['orange_money', 'mtn_money', 'wave', 'moov_money'];
     const phoneWrap = document.getElementById('phoneInputWrap');
     phoneWrap.classList.toggle('show', mobileCanals.includes(canal));
 
@@ -207,6 +217,7 @@ function selectCanal(canal, el) {
         orange_money: '🍊 Payer via Orange Money',
         mtn_money:    '💛 Payer via MTN MoMo',
         wave:         '🌊 Payer via Wave',
+        moov_money:   '💜 Payer via Moov Money',
         carte:        '💳 Payer par carte bancaire',
     };
     document.getElementById('payBtnText').innerHTML = '<i class="bi bi-lock-fill"></i> ' + labels[canal] + ' — ' + MONTANT + ' ' + DEVISE;
@@ -222,7 +233,7 @@ async function initierPaiement() {
     document.getElementById('payError').style.display = 'none';
 
     const body = { canal: selectedCanal };
-    if (['orange_money','mtn_money','wave'].includes(selectedCanal)) {
+    if (['orange_money','mtn_money','wave','moov_money'].includes(selectedCanal)) {
         body.telephone = document.getElementById('phoneInput').value;
     }
 
