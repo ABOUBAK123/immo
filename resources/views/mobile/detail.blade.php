@@ -166,7 +166,7 @@ $equipsMap = [
 <div class="detail-block">
     <div class="detail-price">
         {{ number_format($annonce->mode_location === 'court_terme' ? $annonce->prix_nuit : $annonce->prix, 0, ',', ' ') }}
-        <small>{{ $devise }}{{ $annonce->mode_location === 'court_terme' ? '/nuit' : ($annonce->type === 'location' ? '/mois' : '') }}</small>
+        <small>{{ $devise }}{{ $annonce->mode_location === 'court_terme' ? '/nuit' : ($annonce->type === 'location' ? ('/'.$annonce->type_tarif) : '') }}</small>
     </div>
     <div class="detail-title">{{ $annonce->titre }}</div>
     <div class="detail-loc">
@@ -298,7 +298,11 @@ $equipsMap = [
 @else
 {{-- Long terme / vente --}}
 <div class="detail-section">
-    <h5>{{ $annonce->type === 'vente' ? 'Intéressé par ce bien ?' : 'Location longue durée' }}</h5>
+    @php
+    $contactLabel = $annonce->type === 'vente' ? 'Intéressé par ce bien ?' :
+        ($annonce->type_tarif === 'jour' ? 'Location à la journée' : 'Location longue durée');
+    @endphp
+    <h5>{{ $contactLabel }}</h5>
     @if($annonce->date_disponibilite)
     <p style="font-size:.82rem;color:var(--text-muted);margin-bottom:12px">
         <i class="bi bi-calendar me-1"></i> Disponible à partir du {{ $annonce->date_disponibilite->format('d/m/Y') }}
@@ -346,7 +350,7 @@ $equipsMap = [
 <div class="booking-sticky">
     <div class="booking-price">
         <div class="price">{{ number_format($annonce->prix, 0, ',', ' ') }} {{ $devise }}</div>
-        <div class="unit">{{ $annonce->type === 'location' ? '/mois' : '' }}</div>
+        <div class="unit">{{ $annonce->type === 'location' ? ('/'.$annonce->type_tarif) : '' }}</div>
     </div>
     <a href="mailto:{{ $annonce->bien->proprietaire->email ?? '' }}" class="btn-mob-primary" style="width:auto;padding:12px 20px">
         <i class="bi bi-send"></i> Contacter

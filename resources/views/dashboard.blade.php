@@ -465,7 +465,7 @@
             <div style="font-size:.85rem;font-weight:600;margin-bottom:4px">{{ $a->titre }}</div>
             <div style="font-size:.75rem;color:#9CA3AF"><i class="bi bi-geo-alt me-1"></i>{{ $a->bien->ville }}</div>
             <div style="font-size:1rem;font-weight:700;color:#2563EB;margin-top:8px">
-                {{ number_format($a->prix, 0, ',', ' ') }} {{ $devSymbole }}{{ $a->type === 'location' ? '/mois' : '' }}
+                {{ number_format($a->prix, 0, ',', ' ') }} {{ $devSymbole }}{{ $a->type === 'location' ? ('/'.$a->type_tarif) : '' }}
             </div>
         </div>
     </a>

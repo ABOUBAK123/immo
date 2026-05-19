@@ -144,7 +144,7 @@
                 <span class="display-5 fw-bold text-primary">
                     {{ number_format($annonce->prix, 0, ',', ' ') }} {{ $sym }}
                 </span>
-                <span class="text-muted">{{ $annonce->type === 'location' ? '/ mois' : '' }}</span>
+                <span class="text-muted">{{ $annonce->type === 'location' ? ('/ '.$annonce->type_tarif) : '' }}</span>
             </div>
 
             @auth

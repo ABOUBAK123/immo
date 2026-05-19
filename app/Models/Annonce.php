@@ -11,7 +11,7 @@ class Annonce extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'bien_id', 'agent_id', 'type', 'mode_location', 'prix', 'prix_nuit',
+        'bien_id', 'agent_id', 'type', 'type_tarif', 'mode_location', 'prix', 'prix_nuit',
         'nb_max_voyageurs', 'equipements', 'prix_negociable',
         'titre', 'description', 'statut', 'date_disponibilite', 'vues', 'photos',
     ];

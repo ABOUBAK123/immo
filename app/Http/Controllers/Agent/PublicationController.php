@@ -66,6 +66,7 @@ class PublicationController extends Controller
             'bien_meuble'      => 'boolean',
             // Annonce
             'type'             => 'required|in:location,vente',
+            'type_tarif'       => 'nullable|in:jour,mois',
             'prix'             => 'required|numeric|min:0',
             'titre'            => 'required|string|max:255',
             'description'      => 'nullable|string',
@@ -104,6 +105,7 @@ class PublicationController extends Controller
                 'bien_id'           => $bien->id,
                 'agent_id'          => Auth::id(),
                 'type'              => $request->type,
+                'type_tarif'        => $request->type === 'vente' ? 'mois' : ($request->type_tarif ?? 'mois'),
                 'prix'              => $request->prix,
                 'titre'             => $request->titre,
                 'description'       => $request->description,

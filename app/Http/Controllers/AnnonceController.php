@@ -43,6 +43,7 @@ class AnnonceController extends Controller
         $data = $request->validate([
             'bien_id'           => 'required|exists:biens,id',
             'type'              => 'required|in:location,vente',
+            'type_tarif'        => 'nullable|in:jour,mois',
             'prix'              => 'required|numeric|min:0',
             'prix_negociable'   => 'boolean',
             'titre'             => 'required|string|max:255',
@@ -51,9 +52,10 @@ class AnnonceController extends Controller
             'photos.*'          => 'nullable|image|max:5120',
         ]);
 
-        $data['agent_id']       = Auth::id();
-        $data['statut']         = 'active';
+        $data['agent_id']        = Auth::id();
+        $data['statut']          = 'active';
         $data['prix_negociable'] = $request->boolean('prix_negociable');
+        $data['type_tarif']      = $request->type === 'vente' ? 'mois' : ($request->type_tarif ?? 'mois');
 
         if ($request->hasFile('photos')) {
             $photos = [];
@@ -90,6 +92,7 @@ class AnnonceController extends Controller
         $this->authoriser($annonce);
         $data = $request->validate([
             'prix'             => 'required|numeric|min:0',
+            'type_tarif'       => 'nullable|in:jour,mois',
             'titre'            => 'required|string|max:255',
             'description'      => 'nullable|string',
             'statut'           => 'required|in:active,inactive,vendu,loue,archive',
@@ -97,6 +100,9 @@ class AnnonceController extends Controller
         ]);
 
         $data['prix_negociable'] = $request->boolean('prix_negociable');
+        if ($annonce->type === 'location') {
+            $data['type_tarif'] = $request->type_tarif ?? $annonce->type_tarif;
+        }
         $annonce->update($data);
         return redirect()->route('annonces.show', $annonce)->with('success', 'Annonce mise à jour.');
     }

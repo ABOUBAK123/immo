@@ -156,8 +156,25 @@
                     @foreach(['location'=>'Location','vente'=>'Vente'] as $v=>$l)
                     <label style="flex:1;display:flex;align-items:center;gap:8px;padding:10px 14px;border:2px solid {{ old('type') === $v ? '#EA580C' : '#E5E7EB' }};
                                   border-radius:8px;cursor:pointer;font-size:.83rem;font-weight:500;transition:.15s"
-                           onclick="this.parentElement.querySelectorAll('label').forEach(x=>x.style.borderColor='#E5E7EB');this.style.borderColor='#EA580C'">
+                           onclick="this.parentElement.querySelectorAll('label').forEach(x=>x.style.borderColor='#E5E7EB');this.style.borderColor='#EA580C';onTypeChange()">
                         <input type="radio" name="type" value="{{ $v }}" {{ old('type', 'location') === $v ? 'checked' : '' }}
+                               style="accent-color:#EA580C"> {{ $l }}
+                    </label>
+                    @endforeach
+                </div>
+            </div>
+            {{-- Tarification (visible uniquement pour Location) --}}
+            <div id="typeTarifWrap">
+                <label class="form-label-immo">Tarification</label>
+                <div style="display:flex;gap:10px;margin-top:4px">
+                    @foreach(['mois'=>'Par mois','jour'=>'Par jour'] as $v=>$l)
+                    <label id="tarif-label-{{ $v }}"
+                           style="flex:1;display:flex;align-items:center;gap:8px;padding:10px 14px;
+                                  border:2px solid {{ old('type_tarif','mois') === $v ? '#EA580C' : '#E5E7EB' }};
+                                  border-radius:8px;cursor:pointer;font-size:.83rem;font-weight:500;transition:.15s"
+                           onclick="selectTarif('{{ $v }}')">
+                        <input type="radio" name="type_tarif" value="{{ $v }}"
+                               {{ old('type_tarif','mois') === $v ? 'checked' : '' }}
                                style="accent-color:#EA580C"> {{ $l }}
                     </label>
                     @endforeach
@@ -165,9 +182,11 @@
             </div>
             <div>
                 <label class="form-label-immo">Prix <span style="color:#DC2626">*</span></label>
-                <input type="number" name="prix" class="form-control-immo" value="{{ old('prix') }}" min="0" step="1000"
-                       placeholder="Ex: 250000" required>
-                <div style="font-size:.72rem;color:#9CA3AF;margin-top:4px">En unité de votre devise</div>
+                <div style="position:relative">
+                    <input type="number" name="prix" id="prixInput" class="form-control-immo" value="{{ old('prix') }}" min="0" step="1000"
+                           placeholder="Ex: 250000" required style="padding-right:70px">
+                    <span id="prixUnit" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:.78rem;color:#9CA3AF;font-weight:600">/mois</span>
+                </div>
             </div>
             <div style="display:flex;align-items:center;gap:10px;padding-top:22px">
                 <input type="hidden" name="prix_negociable" value="0">
@@ -262,6 +281,29 @@
 
 @push('scripts')
 <script>
+function selectTarif(val) {
+    document.querySelectorAll('[name="type_tarif"]').forEach(r => {
+        r.closest('label').style.borderColor = r.value === val ? '#EA580C' : '#E5E7EB';
+        r.checked = (r.value === val);
+    });
+    document.getElementById('prixUnit').textContent = '/' + val;
+}
+
+function onTypeChange() {
+    const type = document.querySelector('[name="type"]:checked')?.value;
+    const wrap = document.getElementById('typeTarifWrap');
+    if (wrap) wrap.style.display = (type === 'vente') ? 'none' : '';
+}
+
+// Init on load
+document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[name="type"]').forEach(r => r.addEventListener('change', onTypeChange));
+    onTypeChange();
+    // Sync unit on load
+    const t = document.querySelector('[name="type_tarif"]:checked')?.value ?? 'mois';
+    document.getElementById('prixUnit').textContent = '/' + t;
+});
+
 function goStep(n) {
     [1,2,3].forEach(i => {
         document.getElementById('step'+i).style.display = i === n ? '' : 'none';
@@ -280,7 +322,11 @@ function updateRecap() {
     document.getElementById('recap_ville').textContent = g('bien_ville') || '—';
     document.getElementById('recap_surf').textContent  = (g('bien_surface') ? g('bien_surface')+' m²' : '—');
     document.getElementById('recap_atit').textContent  = g('titre') || '—';
-    document.getElementById('recap_prix').textContent  = g('prix') ? parseInt(g('prix')).toLocaleString('fr-FR') : '—';
+    const typeSel    = document.querySelector('[name="type"]:checked')?.value;
+    const tarifSel   = document.querySelector('[name="type_tarif"]:checked')?.value ?? 'mois';
+    const prixVal    = g('prix') ? parseInt(g('prix')).toLocaleString('fr-FR') : '—';
+    const prixUnit   = typeSel === 'location' ? (tarifSel === 'jour' ? '/jour' : '/mois') : '';
+    document.getElementById('recap_prix').textContent  = prixVal + (prixUnit ? ' ' + prixUnit : '');
 }
 
 function previewPhotos(input) {

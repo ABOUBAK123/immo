@@ -160,7 +160,7 @@
                 <div class="card-mob-body">
                     <div class="card-mob-price">
                         {{ number_format($a->mode_location === 'court_terme' ? $a->prix_nuit : $a->prix, 0, ',', ' ') }}
-                        <span class="price-unit">{{ \App\Models\Parametre::get('paiement_devise','XOF') }}{{ $a->mode_location === 'court_terme' ? '/nuit' : ($a->type === 'location' ? '/mois' : '') }}</span>
+                        <span class="price-unit">{{ \App\Models\Parametre::get('paiement_devise','XOF') }}{{ $a->mode_location === 'court_terme' ? '/nuit' : ($a->type === 'location' ? ('/'.$a->type_tarif) : '') }}</span>
                     </div>
                     <div class="card-mob-title">{{ Str::limit($a->titre, 35) }}</div>
                     <div class="card-mob-loc"><i class="bi bi-geo-alt"></i>{{ $a->bien->ville ?? '—' }}</div>

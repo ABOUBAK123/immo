@@ -42,6 +42,19 @@
             </div>
         </div>
 
+        <div class="mb-3" id="typeTarifRow">
+            <label class="form-label fw-semibold">Tarification</label>
+            <div class="d-flex gap-2">
+                @foreach(['mois' => 'Par mois', 'jour' => 'Par jour'] as $v => $l)
+                <div class="form-check form-check-inline border rounded px-3 py-2" style="cursor:pointer">
+                    <input class="form-check-input" type="radio" name="type_tarif" id="tarif_{{ $v }}"
+                           value="{{ $v }}" {{ old('type_tarif','mois') === $v ? 'checked' : '' }}>
+                    <label class="form-check-label" for="tarif_{{ $v }}" style="cursor:pointer">{{ $l }}</label>
+                </div>
+                @endforeach
+            </div>
+        </div>
+
         <div class="mb-3">
             <label class="form-label fw-semibold">Titre de l'annonce <span class="text-danger">*</span></label>
             <input type="text" name="titre" class="form-control @error('titre') is-invalid @enderror"

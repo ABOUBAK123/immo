@@ -85,7 +85,7 @@
                 </p>
                 <div class="d-flex justify-content-between align-items-center mt-3">
                     <span class="fw-bold text-primary fs-5">
-                        {{ number_format($annonce->prix, 0, ',', ' ') }} {{ $sym }}{{ $annonce->type === 'location' ? '/mois' : '' }}
+                        {{ number_format($annonce->prix, 0, ',', ' ') }} {{ $sym }}{{ $annonce->type === 'location' ? ('/'.$annonce->type_tarif) : '' }}
                     </span>
                     <a href="{{ route('annonces.show', $annonce) }}" class="btn btn-sm btn-outline-primary">
                         Voir <i class="bi bi-arrow-right ms-1"></i>

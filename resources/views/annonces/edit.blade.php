@@ -39,6 +39,21 @@
             <textarea name="description" rows="4" class="form-control">{{ old('description', $annonce->description) }}</textarea>
         </div>
 
+        @if($annonce->type === 'location')
+        <div class="mb-3">
+            <label class="form-label fw-semibold">Tarification</label>
+            <div class="d-flex gap-2">
+                @foreach(['mois' => 'Par mois', 'jour' => 'Par jour'] as $v => $l)
+                <div class="form-check form-check-inline border rounded px-3 py-2">
+                    <input class="form-check-input" type="radio" name="type_tarif" id="tarif_{{ $v }}"
+                           value="{{ $v }}" {{ old('type_tarif', $annonce->type_tarif) === $v ? 'checked' : '' }}>
+                    <label class="form-check-label" for="tarif_{{ $v }}">{{ $l }}</label>
+                </div>
+                @endforeach
+            </div>
+        </div>
+        @endif
+
         <div class="mb-4 form-check">
             <input type="checkbox" name="prix_negociable" id="nego" class="form-check-input" value="1"
                    {{ $annonce->prix_negociable ? 'checked' : '' }}>
