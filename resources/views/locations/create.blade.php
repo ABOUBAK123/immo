@@ -103,7 +103,8 @@
                             padding:10px 14px;font-weight:700;font-size:1rem;color:#15803D">
                     — {{ $sym }}/mois
                 </div>
-                <div class="form-text">Loyer + Charges + Frais d'agence</div>
+                <div id="netProprietaire" class="form-text text-warning fw-semibold"></div>
+                <div class="form-text">Loyer (frais agence déduits) + Charges</div>
             </div>
         </div>
 
@@ -129,19 +130,27 @@
 
 <script>
 function calculerTotal() {
-    const loyer  = parseFloat(document.getElementById('loyer_mensuel').value)  || 0;
-    const charges = parseFloat(document.getElementById('charges').value)        || 0;
-    const pct    = parseFloat(document.getElementById('frais_agence').value)    || 0;
-    const frais  = Math.round(loyer * pct / 100);
-    const total  = loyer + charges + frais;
+    const loyer   = parseFloat(document.getElementById('loyer_mensuel').value) || 0;
+    const charges = parseFloat(document.getElementById('charges').value)       || 0;
+    const pct     = parseFloat(document.getElementById('frais_agence').value)  || 0;
+    const frais   = Math.round(loyer * pct / 100);
+    const total   = loyer + charges;  // frais agence déduit du loyer, pas ajouté
+    const net     = loyer - frais;
 
     let detail = '';
     if (pct > 0) {
-        detail = loyer.toLocaleString('fr-FR') + ' + ' + charges.toLocaleString('fr-FR')
-               + ' + ' + frais.toLocaleString('fr-FR') + ' (agence) = ';
+        detail = loyer.toLocaleString('fr-FR') + ' (dont ' + frais.toLocaleString('fr-FR')
+               + ' agence) + ' + charges.toLocaleString('fr-FR') + ' charges = ';
     }
     document.getElementById('totalMensuel').textContent =
         detail + total.toLocaleString('fr-FR') + ' {{ $sym }}/mois';
+
+    const netEl = document.getElementById('netProprietaire');
+    if (netEl) {
+        netEl.textContent = pct > 0
+            ? 'Net propriétaire : ' + net.toLocaleString('fr-FR') + ' {{ $sym }}/mois'
+            : '';
+    }
 }
 calculerTotal();
 </script>

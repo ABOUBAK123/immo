@@ -31,14 +31,21 @@ class Location extends Model
     public function paiements() { return $this->hasMany(Paiement::class); }
     public function documents() { return $this->morphMany(Document::class, 'documentable'); }
 
+    // Ce que paie le locataire (loyer saisi + charges ; les frais agence sont déjà inclus dans le loyer)
     public function getMontantTotalAttribute(): float
     {
-        $frais = round((float) $this->loyer_mensuel * (float) $this->frais_agence / 100, 2);
-        return (float) $this->loyer_mensuel + (float) $this->charges + $frais;
+        return (float) $this->loyer_mensuel + (float) $this->charges;
     }
 
+    // Montant des frais d'agence déduit du loyer
     public function getMontantFraisAgenceAttribute(): float
     {
         return round((float) $this->loyer_mensuel * (float) $this->frais_agence / 100, 2);
+    }
+
+    // Ce que reçoit le propriétaire (loyer - frais agence)
+    public function getMontantNetProprietaireAttribute(): float
+    {
+        return (float) $this->loyer_mensuel - $this->getMontantFraisAgenceAttribute();
     }
 }

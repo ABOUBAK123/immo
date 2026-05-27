@@ -32,6 +32,9 @@
                     @endif
                 </div>
                 <div class="col-sm-4"><strong>Total locataire :</strong> <span class="text-primary fw-bold">{{ number_format($location->montant_total, 0, ',', ' ') }} {{ $sym }}/mois</span></div>
+                @if($location->frais_agence > 0)
+                <div class="col-sm-4"><strong>Net propriétaire :</strong> <span class="text-success fw-bold">{{ number_format($location->montant_net_proprietaire, 0, ',', ' ') }} {{ $sym }}/mois</span></div>
+                @endif
                 <div class="col-sm-4"><strong>Dépôt garantie :</strong> {{ number_format($location->depot_garantie, 0, ',', ' ') }} {{ $sym }}</div>
                 <div class="col-sm-4"><strong>Début :</strong> {{ $location->date_debut->format('d/m/Y') }}</div>
                 <div class="col-sm-4"><strong>Fin :</strong> {{ $location->date_fin ? $location->date_fin->format('d/m/Y') : 'Sans terme fixe' }}</div>

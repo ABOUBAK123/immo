@@ -69,7 +69,7 @@
                 <div style="font-size:.7rem;color:#9CA3AF">dont {{ number_format($loc->charges, 0, ',', ' ') }} {{ $sym }} charges</div>
                 @endif
                 @if($loc->frais_agence > 0)
-                <div style="font-size:.7rem;color:#9CA3AF">+ {{ $loc->frais_agence }}% agence</div>
+                <div style="font-size:.7rem;color:#9CA3AF">dont {{ $loc->frais_agence }}% agence ({{ number_format($loc->montant_frais_agence, 0, ',', ' ') }} {{ $sym }})</div>
                 @endif
             </td>
             <td>
