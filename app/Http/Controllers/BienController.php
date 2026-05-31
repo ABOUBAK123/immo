@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bien;
+use App\Services\PlanService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -21,11 +22,21 @@ class BienController extends Controller
 
     public function create()
     {
+        $user = Auth::user();
+        if ($user->isProprietaire() && PlanService::aAtteintLimite($user, 'biens')) {
+            return redirect()->route('biens.index')
+                ->with('error', PlanService::messageUpgrade('biens'));
+        }
         return view('biens.create');
     }
 
     public function store(Request $request)
     {
+        $user = Auth::user();
+        if ($user->isProprietaire() && PlanService::aAtteintLimite($user, 'biens')) {
+            return redirect()->route('biens.index')
+                ->with('error', PlanService::messageUpgrade('biens'));
+        }
         $data = $request->validate([
             'nom_proprietaire'   => 'required|string|max:255',
             'titre'              => 'required|string|max:255',

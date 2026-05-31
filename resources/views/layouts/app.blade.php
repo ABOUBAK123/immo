@@ -485,6 +485,10 @@
             <span class="badge-nav" style="background:#DC2626">{{ $nbSansAbo }}</span>
             @endif
         </a>
+        <a href="{{ route('admin.formules') }}"
+           class="nav-item-custom {{ request()->routeIs('admin.formules*') ? 'active' : '' }}">
+            <i class="bi bi-grid-3x3-gap"></i> Formules SaaS
+        </a>
         <a href="{{ route('admin.profils') }}"
            class="nav-item-custom {{ request()->routeIs('admin.profils*') ? 'active' : '' }}">
             <i class="bi bi-sliders"></i> Gestion des profils

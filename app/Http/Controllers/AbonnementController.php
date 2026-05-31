@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Abonnement;
+use App\Models\FormuleAbonnement;
 use App\Models\Parametre;
 use App\Models\User;
 use App\Services\MtnMomoService;
@@ -17,13 +18,30 @@ use Illuminate\Support\Str;
 
 class AbonnementController extends Controller
 {
+    // ─── Page de tarification publique (choix de formule) ────────────────────
+    public function formules()
+    {
+        $formules = FormuleAbonnement::actif()->get();
+        $user     = Auth::user();
+        $formuleCourante = $user?->abonnementActif()?->formule;
+        return view('abonnements.formules', compact('formules', 'formuleCourante'));
+    }
+
     // ─── Vue abonnement propriétaire ─────────────────────────────────────────
-    public function index()
+    public function index(Request $request)
     {
         $user            = Auth::user();
         $abonnementActif = $user->abonnementActif();
-        $historique      = $user->abonnements()->latest()->take(12)->get();
-        [$prix, $devise, $devSymbole] = $this->tarif();
+        $historique      = $user->abonnements()->with('formule')->latest()->take(12)->get();
+        $formules        = FormuleAbonnement::actif()->get();
+
+        // Formule sélectionnée (depuis URL ou formule courante ou première dispo)
+        $formuleSlug = $request->query('formule');
+        $formuleSelectionnee = $formuleSlug
+            ? FormuleAbonnement::findBySlug($formuleSlug)
+            : ($abonnementActif?->formule ?? $formules->first());
+
+        [$prix, $devise, $devSymbole] = $this->tarifFormule($formuleSelectionnee);
 
         // Infos pour la vue : APIs directes configurées + QR codes
         $operateursDirects = [
@@ -38,8 +56,8 @@ class AbonnementController extends Controller
         ];
 
         return view('abonnements.index', compact(
-            'abonnementActif', 'historique', 'prix', 'devise', 'devSymbole',
-            'operateursDirects', 'qrCodes'
+            'abonnementActif', 'historique', 'formules', 'formuleSelectionnee',
+            'prix', 'devise', 'devSymbole', 'operateursDirects', 'qrCodes'
         ));
     }
 
@@ -50,19 +68,26 @@ class AbonnementController extends Controller
         abort_if(!in_array($user->role, ['proprietaire', 'admin']), 403);
 
         $request->validate([
-            'canal'     => 'required|in:orange_money,mtn_money,wave,carte',
-            'telephone' => 'nullable|string|max:25',
+            'canal'      => 'required|in:orange_money,mtn_money,wave,carte',
+            'telephone'  => 'nullable|string|max:25',
+            'formule_id' => 'nullable|exists:formules_abonnement,id',
         ]);
 
-        [$prix, $devise] = $this->tarif();
+        $formule = $request->formule_id
+            ? FormuleAbonnement::find($request->formule_id)
+            : FormuleAbonnement::actif()->first();
+
+        [$prix, $devise] = $this->tarifFormule($formule);
         $canal = $request->canal;
+        $duree = $formule?->duree_jours ?? (int) Parametre::get('abonnement_duree', 30);
 
         $abonnement = Abonnement::create([
             'user_id'        => $user->id,
+            'formule_id'     => $formule?->id,
             'montant'        => $prix,
             'devise'         => $devise,
             'date_debut'     => now()->toDateString(),
-            'date_fin'       => now()->addDays((int) Parametre::get('abonnement_duree', 30))->toDateString(),
+            'date_fin'       => now()->addDays($duree)->toDateString(),
             'statut'         => 'en_attente',
             'canal_paiement' => $canal,
             'payment_token'  => Str::random(48),
@@ -270,7 +295,7 @@ class AbonnementController extends Controller
 
         $statut = $request->statut;
 
-        $abonnements = Abonnement::with('user')
+        $abonnements = Abonnement::with(['user', 'formule'])
             ->when($statut, fn($q) => $q->where('statut', $statut))
             ->latest()->paginate(25)->withQueryString();
 
@@ -286,9 +311,11 @@ class AbonnementController extends Controller
                 ->count(),
         ];
 
-        [$prix, $devise, $devSymbole] = $this->tarif();
+        $statsByFormule = FormuleAbonnement::actif()
+            ->withCount(['abonnements as abonnes_actifs' => fn($q) => $q->where('statut', 'actif')->where('date_fin', '>=', now())])
+            ->get();
 
-        return view('admin.abonnements.index', compact('abonnements', 'stats', 'prix', 'devise', 'devSymbole'));
+        return view('admin.abonnements.index', compact('abonnements', 'stats', 'statsByFormule'));
     }
 
     // ─── Admin : offrir un essai gratuit ─────────────────────────────────────
@@ -297,14 +324,17 @@ class AbonnementController extends Controller
         abort_if(Auth::user()->role !== 'admin', 403);
         abort_if($user->role !== 'proprietaire', 422);
 
-        $jours    = (int) $request->input('jours', 30);
-        $existant = $user->abonnementActif();
-        $debut    = $existant ? $existant->date_fin->addDay() : now();
+        $jours     = (int) $request->input('jours', 30);
+        $formuleId = $request->input('formule_id');
+        $formule   = $formuleId ? FormuleAbonnement::find($formuleId) : FormuleAbonnement::actif()->first();
+        $existant  = $user->abonnementActif();
+        $debut     = $existant ? $existant->date_fin->addDay() : now();
 
         Abonnement::create([
             'user_id'          => $user->id,
+            'formule_id'       => $formule?->id,
             'montant'          => 0,
-            'devise'           => Parametre::get('abonnement_devise', 'XOF'),
+            'devise'           => $formule?->devise ?? Parametre::get('abonnement_devise', 'XOF'),
             'date_debut'       => $debut->toDateString(),
             'date_fin'         => $debut->copy()->addDays($jours)->toDateString(),
             'statut'           => 'actif',
@@ -313,15 +343,21 @@ class AbonnementController extends Controller
             'essai'            => true,
         ]);
 
-        return back()->with('success', "Essai de {$jours} jours accordé à {$user->name}.");
+        $nomFormule = $formule?->nom ?? 'Standard';
+        return back()->with('success', "Essai de {$jours} jours ({$nomFormule}) accordé à {$user->name}.");
     }
 
     // ─── Helpers privés ──────────────────────────────────────────────────────
 
-    private function tarif(): array
+    private function tarifFormule(?FormuleAbonnement $formule): array
     {
-        $prix       = (int) Parametre::get('abonnement_prix', 5000);
-        $devise     = Parametre::get('abonnement_devise', 'XOF');
+        if ($formule) {
+            $prix   = $formule->prix_mensuel;
+            $devise = $formule->devise;
+        } else {
+            $prix   = (int) Parametre::get('abonnement_prix', 5000);
+            $devise = Parametre::get('abonnement_devise', 'XOF');
+        }
         $devSymbole = User::DEVISES[$devise]['symbole'] ?? $devise;
         return [$prix, $devise, $devSymbole];
     }

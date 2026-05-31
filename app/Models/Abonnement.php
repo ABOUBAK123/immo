@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class Abonnement extends Model
 {
     protected $fillable = [
-        'user_id', 'montant', 'devise',
+        'user_id', 'formule_id', 'montant', 'devise',
         'date_debut', 'date_fin', 'statut',
         'methode_paiement', 'canal_paiement',
         'provider_reference', 'payment_token', 'payment_url',
@@ -22,6 +22,12 @@ class Abonnement extends Model
     ];
 
     public function user() { return $this->belongsTo(User::class); }
+    public function formule() { return $this->belongsTo(FormuleAbonnement::class, 'formule_id'); }
+
+    public function nomFormule(): string
+    {
+        return $this->formule?->nom ?? 'Standard';
+    }
 
     public function isActif(): bool
     {

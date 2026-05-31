@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\FormuleController;
 use App\Http\Controllers\Admin\GestionController;
 use App\Http\Controllers\DepenseController;
 use App\Http\Controllers\Admin\ParametreController;
@@ -51,6 +52,7 @@ Route::post('/webhooks/wave', [AbonnementController::class, 'webhookWave'])
 
 // ─── Landing & pages publiques ───────────────────────────────────────────────
 Route::get('/', fn() => view('landing'))->name('landing');
+Route::get('/tarifs', [AbonnementController::class, 'formules'])->name('abonnements.formules');
 Route::get('/marketplace', [AnnonceController::class, 'index'])->name('home');
 Route::get('/annonces/{annonce}', [AnnonceController::class, 'show'])->name('annonces.show')->whereNumber('annonce');
 
@@ -85,6 +87,7 @@ Route::middleware(['auth', 'check.abonnement'])->group(function () {
     Route::post('/abonnements/initier',                    [AbonnementController::class, 'initier'])->name('abonnements.initier');
     Route::get('/abonnements/retour',                      [AbonnementController::class, 'retour'])->name('abonnements.retour');
     Route::get('/abonnements/statut/{reference}',          [AbonnementController::class, 'pollStatut'])->name('abonnements.poll-statut');
+    Route::get('/abonnements/formules',                    [AbonnementController::class, 'formules'])->name('abonnements.formules.auth');
 
     // ─── Espace Agent immobilier ─────────────────────────────────────────────
     Route::prefix('agent')->name('agent.')->group(function () {
@@ -165,6 +168,14 @@ Route::middleware(['auth', 'check.abonnement'])->group(function () {
         // Abonnements
         Route::get('/abonnements',                             [AbonnementController::class, 'adminIndex'])->name('abonnements');
         Route::post('/abonnements/{user}/offrir',             [AbonnementController::class, 'offrirEssai'])->name('abonnements.offrir');
+
+        // Formules SaaS
+        Route::get('/formules',                               [FormuleController::class, 'index'])->name('formules');
+        Route::get('/formules/create',                        [FormuleController::class, 'create'])->name('formules.create');
+        Route::post('/formules',                              [FormuleController::class, 'store'])->name('formules.store');
+        Route::get('/formules/{formule}/edit',                [FormuleController::class, 'edit'])->name('formules.edit');
+        Route::put('/formules/{formule}',                     [FormuleController::class, 'update'])->name('formules.update');
+        Route::patch('/formules/{formule}/toggle',            [FormuleController::class, 'toggleActif'])->name('formules.toggle');
 
         // Agences immobilières
         Route::get('/agences',                      [GestionController::class, 'agences'])->name('agences');

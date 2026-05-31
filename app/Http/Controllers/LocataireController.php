@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\PlanService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -30,11 +31,21 @@ class LocataireController extends Controller
 
     public function create()
     {
+        $user = Auth::user();
+        if ($user->isProprietaire() && PlanService::aAtteintLimite($user, 'locataires')) {
+            return redirect()->route('locataires.index')
+                ->with('error', PlanService::messageUpgrade('locataires'));
+        }
         return view('locataires.create');
     }
 
     public function store(Request $request)
     {
+        $user = Auth::user();
+        if ($user->isProprietaire() && PlanService::aAtteintLimite($user, 'locataires')) {
+            return redirect()->route('locataires.index')
+                ->with('error', PlanService::messageUpgrade('locataires'));
+        }
         $data = $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|email|unique:users',

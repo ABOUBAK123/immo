@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\PlanService;
 use Closure;
 use Illuminate\Http\Request;
 
@@ -13,6 +14,15 @@ class CheckAbonnement
         'logout',
         'dashboard',
         'profil.*',
+    ];
+
+    // Mapping route → feature requise dans la formule
+    private const ROUTE_FEATURES = [
+        'interventions.*' => 'interventions',
+        'depenses.*'      => 'depenses',
+        'agent-ia.*'      => 'ia',
+        'agent.*'         => 'agents',
+        'annonces.*'      => 'annonces',
     ];
 
     public function handle(Request $request, Closure $next)
@@ -38,10 +48,26 @@ class CheckAbonnement
                 ->with('abonnement_requis', true);
         }
 
-        // Avertissement si expiration dans moins de 5 jours
+        // Avertissement expiration dans moins de 5 jours
         $abonnement = $user->abonnementActif();
         if ($abonnement && $abonnement->joursRestants() <= 5) {
             session()->flash('abonnement_expire_bientot', $abonnement->joursRestants());
+        }
+
+        // Vérification feature gate selon la formule
+        foreach (self::ROUTE_FEATURES as $routePattern => $feature) {
+            if ($request->routeIs($routePattern)) {
+                if (!PlanService::peutAcceder($user, $feature)) {
+                    if ($request->expectsJson()) {
+                        return response()->json([
+                            'message' => PlanService::messageUpgrade($feature),
+                            'upgrade_required' => true,
+                        ], 403);
+                    }
+                    return redirect()->route('abonnements.formules')
+                        ->with('upgrade_requis', PlanService::messageUpgrade($feature));
+                }
+            }
         }
 
         return $next($request);
