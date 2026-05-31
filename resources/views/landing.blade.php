@@ -180,6 +180,7 @@
         <a href="#comment">Comment ça marche</a>
         <a href="#avis">Avis</a>
         <a href="{{ route('home') }}">Annonces</a>
+        <a href="{{ route('abonnements.formules') }}">Tarifs</a>
     </div>
     <div class="nav-cta">
         <a href="{{ route('login') }}" class="btn-nav-login">Connexion</a>

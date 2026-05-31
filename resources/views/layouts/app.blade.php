@@ -287,7 +287,7 @@
         @if($navRole === 'proprietaire')
         @php $aboActif = auth()->user()->abonnementActif(); @endphp
         <a href="{{ route('abonnements.index') }}"
-           class="nav-item-custom {{ request()->routeIs('abonnements.*') ? 'active' : '' }}"
+           class="nav-item-custom {{ request()->routeIs('abonnements.index') ? 'active' : '' }}"
            style="{{ !$aboActif ? 'background:#FFF1F2;border-left:3px solid #DC2626' : '' }}">
             <i class="bi bi-{{ $aboActif ? 'shield-check-fill' : 'shield-x-fill' }}"
                style="color:{{ $aboActif ? '#16A34A' : '#DC2626' }}"></i>
@@ -299,6 +299,12 @@
             <span style="margin-left:auto;font-size:.65rem;background:#D97706;color:#fff;
                          padding:1px 7px;border-radius:8px;font-weight:700">{{ $aboActif->joursRestants() }}j</span>
             @endif
+        </a>
+        <a href="{{ route('abonnements.formules') }}"
+           class="nav-item-custom {{ request()->routeIs('abonnements.formules*') ? 'active' : '' }}"
+           style="padding-left:36px;font-size:.82rem">
+            <i class="bi bi-grid-3x3-gap" style="color:#EA580C"></i>
+            <span>Nos formules</span>
         </a>
         @endif
 
