@@ -315,7 +315,12 @@ class AbonnementController extends Controller
             ->withCount(['abonnements as abonnes_actifs' => fn($q) => $q->where('statut', 'actif')->where('date_fin', '>=', now())])
             ->get();
 
-        return view('admin.abonnements.index', compact('abonnements', 'stats', 'statsByFormule'));
+        // Compatibilité avec la vue existante (tarif de référence = formule Pro ou premier plan actif)
+        $formuleRef = FormuleAbonnement::actif()->orderBy('ordre')->skip(1)->first()
+                   ?? FormuleAbonnement::actif()->first();
+        [$prix, $devise, $devSymbole] = $this->tarifFormule($formuleRef);
+
+        return view('admin.abonnements.index', compact('abonnements', 'stats', 'statsByFormule', 'prix', 'devise', 'devSymbole'));
     }
 
     // ─── Admin : offrir un essai gratuit ─────────────────────────────────────
