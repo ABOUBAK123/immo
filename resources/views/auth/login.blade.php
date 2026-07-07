@@ -143,6 +143,19 @@
                 <div class="stat-lbl">Note moyenne</div>
             </div>
         </div>
+
+        {{-- Support Contact Info --}}
+        <div style="background: rgba(255,255,255,.35); border: 1px solid rgba(234,88,12,.3); border-radius: 12px; padding: 14px; margin-top: 20px;">
+            <p style="font-size: .75rem; color: #92400E; font-weight: 600; margin-bottom: 8px;">Besoin d'aide?</p>
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+                <a href="tel:010142004609" style="font-size: .8rem; color: #C2410C; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                    <i class="bi bi-telephone-fill"></i> 01 01 42 00 46 09
+                </a>
+                <a href="https://wa.me/22510142004609" target="_blank" style="font-size: .8rem; color: #C2410C; text-decoration: none; font-weight: 600; display: flex; align-items: center; gap: 6px;">
+                    <i class="bi bi-whatsapp"></i> +225 01 01 42 00 46 09
+                </a>
+            </div>
+        </div>
     </div>
 
     {{-- Panneau droit ──────────────────────────────────────────────────────── --}}
