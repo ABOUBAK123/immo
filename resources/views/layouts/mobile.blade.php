@@ -309,6 +309,9 @@ function initFavs() {
 }
 document.addEventListener('DOMContentLoaded', initFavs);
 </script>
+
+@include('components.support-footer')
+
 @stack('scripts')
 </body>
 </html>

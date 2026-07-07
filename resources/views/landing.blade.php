@@ -417,7 +417,8 @@
             <ul>
                 <li><a href="#">Centre d'aide</a></li>
                 <li><a href="#">Blog</a></li>
-                <li><a href="#">Nous contacter</a></li>
+                <li><a href="tel:010142004609">Tél : 01 01 42 00 46 09</a></li>
+                <li><a href="https://wa.me/22510142004609" target="_blank">WhatsApp : +225 01 01 42 00 46 09</a></li>
                 <li><a href="#">FAQ</a></li>
             </ul>
         </div>
